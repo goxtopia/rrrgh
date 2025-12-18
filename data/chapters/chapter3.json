@@ -1,0 +1,66 @@
+{
+  "title": "迷雾港口 (Mist Harbor) - Chapter 3: The Awakening",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "【第三章：终焉之塔】\n\n暴风雨中的黑岩灯塔。塔顶的水晶正在搏动。巨大的眼睛在云层中注视着你。",
+      "visual": "⛈️👁️🗼",
+      "choices": [
+        {
+          "text": "念诵咒语封印它 (True End)",
+          "next_node": "end_true",
+          "condition": { "has_item": "necronomicon_page" },
+          "effect": {}
+        },
+        {
+          "text": "注入毒药 (Hero End)",
+          "next_node": "end_hero",
+          "condition": { "has_item": "poison_serum" },
+          "effect": {}
+        },
+        {
+          "text": "用【剔骨刀】割断缆绳逃跑 (Escape End)",
+          "next_node": "end_escape",
+          "condition": { "has_item": "knife" },
+          "effect": {}
+        },
+        {
+          "text": "拥抱古神 (Secret End)",
+          "next_node": "end_secret",
+          "condition": { "max_sanity": 20 },
+          "effect": {}
+        },
+        {
+          "text": "什么都做不了 (Bad End)",
+          "next_node": "end_bad",
+          "effect": {}
+        }
+      ]
+    },
+    "end_true": {
+      "text": "【结局：封印者】\n你成功封印了古神。世界安全了，但这只是暂时的。",
+      "visual": "🌅✨",
+      "choices": [{ "text": "重启", "next_chapter": "chapter1", "next_node": "arrival", "effect": { "reset": true } }]
+    },
+    "end_hero": {
+      "text": "【结局：牺牲】\n你与灯塔同归于尽。",
+      "visual": "💥💀",
+      "choices": [{ "text": "重启", "next_chapter": "chapter1", "next_node": "arrival", "effect": { "reset": true } }]
+    },
+    "end_escape": {
+      "text": "【结局：逃兵】\n你偷了一艘船逃走了。但那个声音永远在追逐你。",
+      "visual": "🛶🏃‍♂️",
+      "choices": [{ "text": "重启", "next_chapter": "chapter1", "next_node": "arrival", "effect": { "reset": true } }]
+    },
+    "end_secret": {
+      "text": "【结局：飞升】\nIä! Iä! Cthulhu fhtagn!",
+      "visual": "🐙🌊",
+      "choices": [{ "text": "重启", "next_chapter": "chapter1", "next_node": "arrival", "effect": { "reset": true } }]
+    },
+    "end_bad": {
+      "text": "【结局：祭品】\n你被吃掉了。",
+      "visual": "🍽️",
+      "choices": [{ "text": "重启", "next_chapter": "chapter1", "next_node": "arrival", "effect": { "reset": true } }]
+    }
+  }
+}

@@ -3,20 +3,20 @@ import json
 import os
 
 app = Flask(__name__)
-# Use a consistent key for development to preserve sessions across restarts
 app.secret_key = os.environ.get('SECRET_KEY', 'cthulhu_fhtagn_dev_key')
 
-# Load story
-STORY_PATH = 'story.json'
-STORY = {}
+CHAPTERS_DIR = 'data/chapters'
+# Cache for chapters to avoid re-reading disk too often
+CHAPTER_CACHE = {}
 
-def load_story():
-    global STORY
-    if os.path.exists(STORY_PATH):
-        with open(STORY_PATH, 'r', encoding='utf-8') as f:
-            STORY = json.load(f)
-
-load_story()
+def load_chapter(chapter_name):
+    if app.debug or chapter_name not in CHAPTER_CACHE:
+        path = os.path.join(CHAPTERS_DIR, f"{chapter_name}.json")
+        if not os.path.exists(path):
+            return None
+        with open(path, 'r', encoding='utf-8') as f:
+            CHAPTER_CACHE[chapter_name] = json.load(f)
+    return CHAPTER_CACHE[chapter_name]
 
 @app.route('/')
 def index():
@@ -25,37 +25,41 @@ def index():
 @app.route('/start', methods=['POST'])
 def start_game():
     session.clear()
-    session['current_node'] = STORY['start_node']
-    session['sanity'] = STORY.get('initial_state', {}).get('sanity', 100)
-    session['inventory'] = STORY.get('initial_state', {}).get('inventory', [])
+    # Default start: chapter1
+    initial_chapter = 'chapter1'
+    story_data = load_chapter(initial_chapter)
 
-    node_data = STORY['nodes'][STORY['start_node']]
+    if not story_data:
+        return jsonify({'error': 'Story data not found'}), 500
+
+    session['current_chapter'] = initial_chapter
+    session['current_node'] = story_data['start_node']
+    session['sanity'] = story_data.get('initial_state', {}).get('sanity', 100)
+    session['inventory'] = story_data.get('initial_state', {}).get('inventory', [])
+
+    node_data = story_data['nodes'][story_data['start_node']]
     return jsonify(get_response_payload(node_data))
 
 @app.route('/choice', methods=['POST'])
 def make_choice():
-    # Reload story in debug mode so we can edit JSON without restart
-    if app.debug:
-        load_story()
-
-    choice_index = request.json.get('index')
+    current_chapter_name = session.get('current_chapter')
     current_node_id = session.get('current_node')
 
-    if not current_node_id:
+    if not current_chapter_name or not current_node_id:
         return jsonify({'error': 'Game not started'}), 400
 
-    node = STORY['nodes'].get(current_node_id)
+    story_data = load_chapter(current_chapter_name)
+    if not story_data:
+         return jsonify({'error': 'Chapter data missing'}), 500
+
+    node = story_data['nodes'].get(current_node_id)
+    choice_index = request.json.get('index')
 
     if not node or choice_index is None:
         return jsonify({'error': 'Invalid state'}), 400
 
     try:
         choice_index = int(choice_index)
-        # We need to find the correct choice based on the filtered list the user saw
-        # But for simplicity, let's assume the frontend sends the index relative to the *full* list
-        # OR we reconstruct the valid list.
-        # Better approach: Frontend sends index relative to the valid choices list, backend reconstructs logic.
-
         valid_choices_map = []
         for idx, ch in enumerate(node['choices']):
              if check_condition(ch.get('condition')):
@@ -79,31 +83,50 @@ def make_choice():
         session['sanity'] = session.get('sanity', 100) + effects.get('sanity', 0)
         if 'add_item' in effects:
             inv = session.get('inventory', [])
-            item = effects['add_item']
-            if item not in inv:
-                inv.append(item)
+            items_to_add = effects['add_item']
+
+            # Handle both single string and list of strings
+            if isinstance(items_to_add, list):
+                for item in items_to_add:
+                    if item not in inv:
+                        inv.append(item)
+            else:
+                if items_to_add not in inv:
+                    inv.append(items_to_add)
+
             session['inventory'] = inv
 
-    # Move to next node
-    next_node_id = choice['next_node']
-    session['current_node'] = next_node_id
+    # Handle Transition
+    next_chapter = choice.get('next_chapter')
+    next_node_id = choice.get('next_node')
 
-    if next_node_id not in STORY['nodes']:
+    if next_chapter:
+        # Switch Chapter
+        new_story_data = load_chapter(next_chapter)
+        if not new_story_data:
+            return jsonify({'error': f'Chapter {next_chapter} not found'}), 500
+
+        session['current_chapter'] = next_chapter
+        # If next_node is not specified, use start_node of new chapter
+        if not next_node_id:
+            next_node_id = new_story_data['start_node']
+
+        session['current_node'] = next_node_id
+        next_node = new_story_data['nodes'].get(next_node_id)
+    else:
+        # Same Chapter
+        session['current_node'] = next_node_id
+        next_node = story_data['nodes'].get(next_node_id)
+
+    if not next_node:
          return jsonify({'error': f'Node {next_node_id} not found'}), 500
-
-    next_node = STORY['nodes'][next_node_id]
 
     return jsonify(get_response_payload(next_node))
 
 def get_response_payload(node):
-    # Filter choices based on conditions
     valid_choices = []
-
-    # We only send choices that meet conditions
-    for i, ch in enumerate(node['choices']):
+    for ch in node['choices']:
         if check_condition(ch.get('condition')):
-             # We send 0, 1, 2... as indices for the buttons
-             # The backend will remap them using the same logic
              valid_choices.append({'text': ch['text'], 'index': len(valid_choices)})
 
     return {
