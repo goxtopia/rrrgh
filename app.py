@@ -1,6 +1,7 @@
 from flask import Flask, render_template, session, jsonify, request
 import json
 import os
+import random
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'cthulhu_fhtagn_dev_key')
@@ -36,6 +37,7 @@ def start_game():
     session['current_node'] = story_data['start_node']
     session['sanity'] = story_data.get('initial_state', {}).get('sanity', 100)
     session['inventory'] = story_data.get('initial_state', {}).get('inventory', [])
+    session['stats'] = story_data.get('initial_state', {}).get('stats', {'str': 10, 'dex': 10})
 
     node_data = story_data['nodes'][story_data['start_node']]
     return jsonify(get_response_payload(node_data))
@@ -74,6 +76,70 @@ def make_choice():
     except (IndexError, ValueError):
          return jsonify({'error': 'Invalid choice'}), 400
 
+    roll_message = None
+    next_node_id = choice.get('next_node')
+    next_chapter = choice.get('next_chapter')
+
+    # Handle Dice Roll
+    if 'roll' in choice:
+        roll_data = choice['roll']
+        # Default d20 if not specified
+        dice_sides = 20
+        if 'dice' in roll_data:
+            try:
+                # Parse "1d20" or just use number
+                d_str = str(roll_data['dice']).lower()
+                if 'd' in d_str:
+                    parts = d_str.split('d')
+                    dice_sides = int(parts[1])
+                else:
+                    dice_sides = int(d_str)
+            except (ValueError, IndexError):
+                dice_sides = 20
+
+        roll_val = random.randint(1, dice_sides)
+
+        # Add bonus from stat if specified
+        bonus = 0
+        bonus_stat = roll_data.get('bonus_stat')
+        if bonus_stat:
+            bonus = session.get('stats', {}).get(bonus_stat, 0)
+
+        total_roll = roll_val + bonus
+
+        # Determine target
+        target = roll_data.get('target', 10)
+        if isinstance(target, str):
+            # Target is a stat name (e.g. 'str') -> Roll against stat (e.g. Roll <= STR)
+            target = session.get('stats', {}).get(target, 10)
+
+        # Determine success
+        # Condition: 'gt' (roll > target) or 'lte' (roll <= target)
+        condition = roll_data.get('condition', 'gt')
+        success = False
+
+        check_val = total_roll if bonus_stat else roll_val
+
+        if condition == 'gt':
+            success = check_val > target
+            comparison_txt = ">"
+        elif condition == 'lte':
+            success = check_val <= target
+            comparison_txt = "<="
+        elif condition == 'gte':
+            success = check_val >= target
+            comparison_txt = ">="
+        else:
+            success = check_val >= target # Default
+
+        roll_detail = f"{roll_val}+{bonus}" if bonus_stat else f"{roll_val}"
+        roll_message = f"🎲 掷骰: {roll_detail} = {check_val} (目标 {comparison_txt} {target}) -> {'成功!' if success else '失败!'}"
+
+        if success:
+            next_node_id = roll_data['success_node']
+        else:
+            next_node_id = roll_data['failure_node']
+
     # Apply effects
     if 'effect' in choice:
         effects = choice['effect']
@@ -96,9 +162,13 @@ def make_choice():
 
             session['inventory'] = inv
 
+        if 'update_stats' in effects:
+            stats = session.get('stats', {})
+            for k, v in effects['update_stats'].items():
+                stats[k] = stats.get(k, 10) + v
+            session['stats'] = stats
+
     # Handle Transition
-    next_chapter = choice.get('next_chapter')
-    next_node_id = choice.get('next_node')
 
     if next_chapter:
         # Switch Chapter
@@ -121,7 +191,10 @@ def make_choice():
     if not next_node:
          return jsonify({'error': f'Node {next_node_id} not found'}), 500
 
-    return jsonify(get_response_payload(next_node))
+    payload = get_response_payload(next_node)
+    if roll_message:
+        payload['roll_message'] = roll_message
+    return jsonify(payload)
 
 def get_response_payload(node):
     valid_choices = []
@@ -135,7 +208,8 @@ def get_response_payload(node):
         'choices': valid_choices,
         'stats': {
             'sanity': session.get('sanity'),
-            'inventory': session.get('inventory')
+            'inventory': session.get('inventory'),
+            'attributes': session.get('stats', {})
         }
     }
 

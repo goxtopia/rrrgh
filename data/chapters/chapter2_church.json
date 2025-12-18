@@ -37,7 +37,18 @@
       "choices": [
         {
           "text": "进入教堂",
-          "next_node": "enter_peaceful",
+          "next_node": "enter_amulet_success",
+          "effect": {}
+        }
+      ]
+    },
+    "enter_amulet_success": {
+      "text": "你走进教堂。大门在你身后关上。里面的信徒正在进行仪式，但因为你有信物，他们把你当成了自己人。",
+      "visual": "🕯️🛐🤝",
+      "choices": [
+        {
+          "text": "假装祈祷，混入其中",
+          "next_node": "fake_pray",
           "effect": {}
         }
       ]

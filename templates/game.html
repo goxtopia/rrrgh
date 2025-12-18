@@ -15,6 +15,7 @@
             <h1>MIST HARBOR</h1>
             <div id="stats-bar">
                 <span id="sanity-display">SANITY: 100%</span> |
+                <span id="stats-display">STR: 10 DEX: 10</span> |
                 <span id="inventory-display">INV: []</span>
             </div>
         </header>
@@ -67,6 +68,11 @@
             // Update Stats
             document.getElementById('sanity-display').innerText = `SANITY: ${data.stats.sanity}%`;
 
+            if (data.stats.attributes) {
+                const attrs = data.stats.attributes;
+                document.getElementById('stats-display').innerText = `STR: ${attrs.str || 10} DEX: ${attrs.dex || 10}`;
+            }
+
             const invText = data.stats.inventory.length > 0 ? data.stats.inventory.join(', ') : 'EMPTY';
             document.getElementById('inventory-display').innerText = `INV: [${invText}]`;
 
@@ -85,7 +91,13 @@
             // Update Text (Typewriter effect)
             const textDiv = document.getElementById('text-display');
             textDiv.innerHTML = '';
-            typeWriter(data.text, textDiv);
+
+            let fullText = data.text;
+            if (data.roll_message) {
+                fullText = data.roll_message + "\n\n" + fullText;
+            }
+
+            typeWriter(fullText, textDiv);
 
             // Update Choices
             const choicesDiv = document.getElementById('choices-container');

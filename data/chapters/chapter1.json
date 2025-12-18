@@ -1,11 +1,33 @@
 {
   "title": "迷雾港口 (Mist Harbor) - Chapter 1",
-  "start_node": "arrival",
+  "start_node": "character_select",
   "initial_state": {
     "sanity": 100,
-    "inventory": []
+    "inventory": [],
+    "stats": { "str": 10, "dex": 10 }
   },
   "nodes": {
+    "character_select": {
+      "text": "在你恢复意识之前，你回忆起自己是谁...",
+      "visual": "👤❓",
+      "choices": [
+        {
+          "text": "我是个强壮的水手 (STR +5)",
+          "next_node": "arrival",
+          "effect": { "update_stats": { "str": 5 } }
+        },
+        {
+          "text": "我是个敏捷的小偷 (DEX +5)",
+          "next_node": "arrival",
+          "effect": { "update_stats": { "dex": 5 } }
+        },
+        {
+          "text": "我是个私家侦探 (SAN +20)",
+          "next_node": "arrival",
+          "effect": { "sanity": 20 }
+        }
+      ]
+    },
     "arrival": {
       "text": "【第一章：迷雾中的异客】\n\n冰冷的海水呛入你的肺部。你拼命挣扎，终于爬上了满是藤壶的码头。四周是浓得化不开的雾，空气中弥漫着腐烂海藻和死鱼的腥气。\n\n远处隐约可见两处光亮：昏黄的煤气灯（通往广场）和惨白的灯塔光束。",
       "visual": "🌊🌫️⚓",
@@ -23,7 +45,7 @@
       ]
     },
     "dock_warehouse": {
-      "text": "仓库里堆满了发霉的渔网。角落里有一具干枯的尸体，手里紧紧攥着什么。",
+      "text": "仓库里堆满了发霉的渔网。角落里有一具干枯的尸体，手里紧紧攥着什么。旁边还有一个钉死的木箱。",
       "visual": "🏚️🕸️💀",
       "choices": [
         {
@@ -34,9 +56,43 @@
           }
         },
         {
+          "text": "[STR] 强行撬开木箱 (Roll + STR > 15)",
+          "roll": {
+             "dice": "1d20",
+             "bonus_stat": "str",
+             "target": 15,
+             "condition": "gt",
+             "success_node": "open_crate_success",
+             "failure_node": "open_crate_fail"
+          },
+          "next_node": "dummy"
+        },
+        {
           "text": "离开去广场",
           "next_node": "town_square",
           "effect": {}
+        }
+      ]
+    },
+    "open_crate_success": {
+      "text": "你用蛮力扯开了木板。里面有一些过期的罐头。",
+      "visual": "🥫💪",
+      "choices": [
+        {
+          "text": "吃掉罐头 (+10 Sanity)",
+          "next_node": "dock_warehouse",
+          "effect": { "sanity": 10 }
+        }
+      ]
+    },
+    "open_crate_fail": {
+      "text": "箱子纹丝不动，你的手指还划破了。",
+      "visual": "🔒🩸",
+      "choices": [
+        {
+          "text": "算了",
+          "next_node": "dock_warehouse",
+          "effect": { "sanity": -2 }
         }
       ]
     },
@@ -84,9 +140,16 @@
       "visual": "🐟🔪🐕",
       "choices": [
         {
-          "text": "潜行过去拿旁边桌上的【剔骨刀】",
-          "next_node": "get_knife_stealth",
-          "effect": {}
+          "text": "[DEX] 潜行过去拿【剔骨刀】 (Roll + DEX > 15)",
+          "roll": {
+             "dice": "1d20",
+             "bonus_stat": "dex",
+             "target": 15,
+             "condition": "gt",
+             "success_node": "get_knife_stealth",
+             "failure_node": "stealth_fail"
+          },
+          "next_node": "dummy"
         },
         {
           "text": "用【撬棍】偷袭它",
@@ -100,6 +163,17 @@
           "effect": {}
         }
       ]
+    },
+    "stealth_fail": {
+       "text": "你踩到了鱼内脏滑倒了！怪物猛地转过头，扑向了你。",
+       "visual": "⚠️🐕💥",
+       "choices": [
+         {
+           "text": "逃跑 (-10 Sanity)",
+           "next_node": "town_square",
+           "effect": { "sanity": -10 }
+         }
+       ]
     },
     "get_knife_stealth": {
       "text": "你屏住呼吸，拿到了【剔骨刀】。怪物突然抬头嗅了嗅，你赶紧溜回了广场。",
