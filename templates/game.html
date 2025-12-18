@@ -24,17 +24,92 @@
             <div id="visual-display" class="visual-art"></div>
             <div id="text-display" class="typewriter"></div>
             <div id="choices-container">
-                <button onclick="startGame()">START GAME</button>
+                <button onclick="showModeSelect()">START GAME</button>
             </div>
         </main>
+    </div>
+
+    <!-- Mode Select Modal -->
+    <div id="mode-select" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h2>SELECT GAME MODE</h2>
+            <button onclick="startStoryMode()">STORY MODE (Classic)</button>
+            <button onclick="showLiveSetup()">LIVE MODE (AI GM)</button>
+            <button onclick="closeModal()">CANCEL</button>
+        </div>
+    </div>
+
+    <!-- Live Setup Modal -->
+    <div id="live-setup" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h2>LIVE MODE SETUP</h2>
+            <div class="input-group">
+                <label>API Key (OpenAI Compatible):</label>
+                <input type="password" id="api-key" placeholder="sk-...">
+            </div>
+            <div class="input-group">
+                <label>Endpoint URL:</label>
+                <input type="text" id="endpoint" value="https://api.openai.com/v1">
+            </div>
+            <div class="input-group">
+                <label>Model:</label>
+                <input type="text" id="model" value="gpt-3.5-turbo">
+            </div>
+            <div class="input-group">
+                <label>World Context (Optional):</label>
+                <textarea id="world-prompt" placeholder="Leave empty for default Mist Harbor..."></textarea>
+            </div>
+            <button onclick="startLiveMode()">BEGIN SESSION</button>
+            <button onclick="closeModal()">CANCEL</button>
+        </div>
     </div>
 
     <script>
         let isTyping = false;
         let typingTimer = null;
 
-        async function startGame() {
+        function showModeSelect() {
+            document.getElementById('mode-select').style.display = 'flex';
+        }
+
+        function showLiveSetup() {
+            document.getElementById('mode-select').style.display = 'none';
+            document.getElementById('live-setup').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('mode-select').style.display = 'none';
+            document.getElementById('live-setup').style.display = 'none';
+        }
+
+        async function startStoryMode() {
+            closeModal();
             const response = await fetch('/start', { method: 'POST' });
+            const data = await response.json();
+            updateUI(data);
+        }
+
+        async function startLiveMode() {
+            const apiKey = document.getElementById('api-key').value;
+            const endpoint = document.getElementById('endpoint').value;
+            const model = document.getElementById('model').value;
+            const worldPrompt = document.getElementById('world-prompt').value;
+
+            closeModal();
+
+            // Show loading state
+            document.getElementById('text-display').innerText = "Connecting to the Keeper...";
+
+            const response = await fetch('/live/setup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    api_key: apiKey,
+                    endpoint: endpoint,
+                    model: model,
+                    world_prompt: worldPrompt
+                })
+            });
             const data = await response.json();
             updateUI(data);
         }

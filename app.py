@@ -2,6 +2,8 @@ from flask import Flask, render_template, session, jsonify, request
 import json
 import os
 import random
+import requests
+import time
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'cthulhu_fhtagn_dev_key')
@@ -9,6 +11,10 @@ app.secret_key = os.environ.get('SECRET_KEY', 'cthulhu_fhtagn_dev_key')
 CHAPTERS_DIR = 'data/chapters'
 # Cache for chapters to avoid re-reading disk too often
 CHAPTER_CACHE = {}
+
+# In-memory storage for Live Mode sessions (simple dict for prototype)
+# Key: session_id (from cookie/secret), Value: list of messages
+LIVE_SESSIONS = {}
 
 def load_chapter(chapter_name):
     if app.debug or chapter_name not in CHAPTER_CACHE:
@@ -38,12 +44,17 @@ def start_game():
     session['sanity'] = story_data.get('initial_state', {}).get('sanity', 100)
     session['inventory'] = story_data.get('initial_state', {}).get('inventory', [])
     session['stats'] = story_data.get('initial_state', {}).get('stats', {'str': 10, 'dex': 10})
+    session['mode'] = 'story'
 
     node_data = story_data['nodes'][story_data['start_node']]
     return jsonify(get_response_payload(node_data))
 
 @app.route('/choice', methods=['POST'])
 def make_choice():
+    # Detect Mode
+    if session.get('mode') == 'live':
+        return make_live_choice()
+
     current_chapter_name = session.get('current_chapter')
     current_node_id = session.get('current_node')
 
@@ -198,9 +209,16 @@ def make_choice():
 
 def get_response_payload(node):
     valid_choices = []
-    for ch in node['choices']:
-        if check_condition(ch.get('condition')):
-             valid_choices.append({'text': ch['text'], 'index': len(valid_choices)})
+    # If node has 'choices' list of strings (Live Mode) vs objects (Story Mode)
+    # We adapt here or handle it in live logic.
+    if node.get('choices') and isinstance(node['choices'][0], dict):
+        for ch in node['choices']:
+            if check_condition(ch.get('condition')):
+                valid_choices.append({'text': ch['text'], 'index': len(valid_choices)})
+    elif node.get('choices'):
+         # List of strings (from LLM)
+         for ch in node['choices']:
+             valid_choices.append({'text': ch, 'index': len(valid_choices)})
 
     return {
         'text': node['text'],
@@ -225,6 +243,152 @@ def check_condition(condition):
         if session.get('sanity', 0) > condition['max_sanity']:
             return False
     return True
+
+
+# ================= LIVE MODE =================
+
+@app.route('/live/setup', methods=['POST'])
+def live_setup():
+    data = request.json
+    session.clear()
+    session['mode'] = 'live'
+    session['live_api_endpoint'] = data.get('endpoint', 'https://api.openai.com/v1')
+    session['live_api_key'] = data.get('api_key')
+    session['live_model'] = data.get('model', 'gpt-3.5-turbo')
+    session['live_world'] = data.get('world_prompt') or open('WORLD_DESIGN.md', 'r').read()
+
+    session['sanity'] = 100
+    session['inventory'] = []
+    session['stats'] = {'str': 10, 'dex': 10}
+
+    # Init session history
+    sid = os.urandom(8).hex()
+    session['live_sid'] = sid
+    LIVE_SESSIONS[sid] = []
+
+    # Generate intro
+    return generate_live_turn("GAME_START")
+
+def make_live_choice():
+    choice_index = request.json.get('index')
+    sid = session.get('live_sid')
+    if not sid or sid not in LIVE_SESSIONS:
+        return jsonify({'error': 'Live session expired'}), 400
+
+    history = LIVE_SESSIONS[sid]
+    # Get last assistant message to find choices
+    last_msg = next((m for m in reversed(history) if m['role'] == 'assistant'), None)
+
+    user_action = "Continue"
+    if last_msg:
+        try:
+            content = json.loads(last_msg['content'])
+            choices = content.get('choices', [])
+            if choice_index is not None and 0 <= int(choice_index) < len(choices):
+                user_action = choices[int(choice_index)]
+        except:
+            pass
+
+    return generate_live_turn(user_action)
+
+def generate_live_turn(user_input):
+    sid = session.get('live_sid')
+    history = LIVE_SESSIONS[sid]
+
+    # Construct System Prompt if new
+    if not history:
+        world = session.get('live_world', '')
+        sys_prompt = f"""You are the Keeper of Arcane Lore (Game Master) for a retro Cthulhu text adventure.
+        World Context: {world}
+
+        Output MUST be valid JSON with this structure:
+        {{
+            "text": "Narrative description...",
+            "visual": "Emoji string (2-4 chars)",
+            "choices": ["Choice 1", "Choice 2", ...],
+            "update_stats": {{ "sanity": -5, "add_item": "key" }} (Optional)
+        }}
+
+        Rules:
+        1. Keep descriptions atmospheric but concise (under 200 words).
+        2. Provide 2-4 meaningful choices.
+        3. Use 'update_stats' to modify player state.
+        4. If the user makes a choice that requires a roll, perform the check yourself based on their stats (STR {session['stats']['str']}, DEX {session['stats']['dex']}, SAN {session['sanity']}) and describe the result in the next narrative.
+        5. Visuals should be simple emoji combinations like "🌫️⚓" or "🐙😱".
+        """
+        history.append({"role": "system", "content": sys_prompt})
+
+    # Add User Input
+    history.append({"role": "user", "content": f"Player Action: {user_input}. Current State: Sanity {session['sanity']}, Inventory {session['inventory']}"})
+
+    # Call API
+    api_key = session.get('live_api_key')
+    endpoint = session.get('live_api_endpoint')
+    model = session.get('live_model')
+
+    response_json = {}
+
+    if not api_key:
+        # MOCK MODE
+        time.sleep(1) # Simulate latency
+        response_json = {
+            "text": "[MOCK MODE] The LLM API Key is missing. You find yourself in a void of simulation. The Keeper is silent.",
+            "visual": "🤖🚫",
+            "choices": ["Restart Setup"],
+            "update_stats": {}
+        }
+        if user_input == "GAME_START":
+             response_json["text"] = "[MOCK MODE] You stand at the edge of the digital abyss. This is a simulation because no API Key was provided."
+    else:
+        try:
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+            # Handle potential trailing slash issues
+            url = f"{endpoint.rstrip('/')}/chat/completions"
+
+            payload = {
+                "model": model,
+                "messages": history,
+                "temperature": 0.7
+            }
+
+            r = requests.post(url, json=payload, headers=headers, timeout=30)
+            r.raise_for_status()
+            res_data = r.json()
+            content_str = res_data['choices'][0]['message']['content']
+
+            # Extract JSON from potential markdown code blocks
+            if "```json" in content_str:
+                content_str = content_str.split("```json")[1].split("```")[0].strip()
+            elif "```" in content_str:
+                content_str = content_str.split("```")[1].strip()
+
+            response_json = json.loads(content_str)
+            history.append({"role": "assistant", "content": content_str})
+
+        except Exception as e:
+             response_json = {
+                "text": f"The Keeper's voice is distorted (API Error: {str(e)})",
+                "visual": "⚠️🔌",
+                "choices": ["Try Again"],
+                "update_stats": {}
+            }
+
+    # Process updates
+    if 'update_stats' in response_json:
+        updates = response_json['update_stats']
+        session['sanity'] = session.get('sanity', 100) + updates.get('sanity', 0)
+
+        item = updates.get('add_item')
+        if item:
+            inv = session.get('inventory', [])
+            if item not in inv:
+                inv.append(item)
+            session['inventory'] = inv
+
+    return jsonify(get_response_payload(response_json))
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
