@@ -124,6 +124,9 @@ def check_condition(condition):
     if 'min_sanity' in condition:
         if session.get('sanity', 0) < condition['min_sanity']:
             return False
+    if 'max_sanity' in condition:
+        if session.get('sanity', 0) > condition['max_sanity']:
+            return False
     return True
 
 if __name__ == '__main__':

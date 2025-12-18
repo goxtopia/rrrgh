@@ -142,6 +142,23 @@ button:hover {
     animation: glitch-anim 0.3s cubic-bezier(.25, .46, .45, .94) both;
 }
 
+/* Ensure pulse continues after glitch, or runs concurrently if we applied it to same element.
+   Actually, since we re-add the class, it overrides.
+   We can make glitch animation finish and then fallback to pulse if defined on ID.
+   But specificity matters. ID #visual-art has animation pulse. Class .glitch has animation glitch-anim.
+   Class selector usually overrides ID? No, ID is stronger.
+   Wait, .visual-art is a class in my CSS.
+   .visual-art { animation: pulse ... }
+   .glitch { animation: glitch-anim ... }
+   So when .glitch is added, it overrides pulse.
+
+   Solution: Chain the animations in the .glitch class so it goes back to pulsing,
+   OR just let JS remove the class after timeout.
+
+   Let's modify JS in the next step. But here I can define a combined animation or just leave it.
+   Better solution: Let JS remove the class.
+*/
+
 @keyframes glitch-anim {
     0% { transform: translate(0) }
     20% { transform: translate(-2px, 2px) }
