@@ -77,6 +77,11 @@
             void visualDiv.offsetWidth; // trigger reflow
             visualDiv.classList.add('glitch');
 
+            // Remove glitch class after animation finishes to restore pulse
+            setTimeout(() => {
+                visualDiv.classList.remove('glitch');
+            }, 300);
+
             // Update Text (Typewriter effect)
             const textDiv = document.getElementById('text-display');
             textDiv.innerHTML = '';
