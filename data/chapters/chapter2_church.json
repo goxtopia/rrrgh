@@ -1,0 +1,121 @@
+{
+  "title": "迷雾港口 (Mist Harbor) - Chapter 2A: Church",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "【第二章：深渊圣歌】\n\n你站在圣彼得教堂前。大门紧锁，上面有一个圆形的凹槽。",
+      "visual": "⛪🔒🌑",
+      "choices": [
+        {
+          "text": "放入【奇怪的硬币】",
+          "next_node": "enter_peaceful",
+          "condition": { "has_item": "strange_coin" },
+          "effect": {}
+        },
+        {
+          "text": "用【撬棍】撬开",
+          "next_node": "enter_force",
+          "condition": { "has_item": "crowbar" },
+          "effect": { "sanity": -5 }
+        },
+        {
+          "text": "出示【达贡护身符】",
+          "next_node": "enter_amulet",
+          "condition": { "has_item": "dagon_amulet" },
+          "effect": {}
+        },
+        {
+           "text": "试图推门",
+           "next_node": "door_locked",
+           "effect": {}
+        }
+      ]
+    },
+    "enter_amulet": {
+      "text": "你拿出护身符。门上的观察孔打开了，一双死鱼眼看了看，门被打开了。“进来吧，兄弟。”",
+      "visual": "👁️🚪🔓",
+      "choices": [
+        {
+          "text": "进入教堂",
+          "next_node": "enter_peaceful",
+          "effect": {}
+        }
+      ]
+    },
+    "door_locked": {
+      "text": "门纹丝不动。你需要钥匙或者暴力。",
+      "visual": "❌🚪",
+      "choices": [
+        {
+          "text": "返回",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "enter_peaceful": {
+      "text": "硬币完美契合。大门无声地滑开。里面的信徒正在进行仪式，但因为你有信物，他们把你当成了自己人。",
+      "visual": "🕯️🛐🤝",
+      "choices": [
+        {
+          "text": "假装祈祷，混入其中",
+          "next_node": "fake_pray",
+          "effect": {}
+        }
+      ]
+    },
+    "enter_force": {
+      "text": "巨大的声响惊动了里面的东西。布莱克伍德神父尖叫着指着你：“异教徒！”两只深潜者扑了过来。",
+      "visual": "🔊😱⚔️",
+      "choices": [
+        {
+          "text": "战斗！(需要武器)",
+          "next_node": "fight_monsters",
+          "condition": { "has_item": "knife" },
+          "effect": { "sanity": -10 }
+        },
+        {
+           "text": "逃跑",
+           "next_node": "flee_to_lighthouse",
+           "effect": { "sanity": -20 }
+        }
+      ]
+    },
+    "fake_pray": {
+      "text": "你跟着他们低声吟唱。虽然这让你感到恶心，但你成功混到了祭坛附近。你趁机偷走了【死灵之书残页】。",
+      "visual": "🎶🤢📜",
+      "choices": [
+        {
+          "text": "悄悄离开前往灯塔",
+          "next_chapter": "chapter3",
+          "next_node": "start",
+          "effect": { "add_item": "necronomicon_page" }
+        }
+      ]
+    },
+    "fight_monsters": {
+      "text": "你用刀刺穿了怪物的喉咙。神父见状逃跑了。地上留下了【死灵之书残页】。",
+      "visual": "🩸🗡️📜",
+      "choices": [
+        {
+          "text": "拿上残页去灯塔",
+          "next_chapter": "chapter3",
+          "next_node": "start",
+          "effect": { "add_item": "necronomicon_page" }
+        }
+      ]
+    },
+    "flee_to_lighthouse": {
+       "text": "你慌不择路地逃向灯塔，虽然保住了命，但一无所获。",
+       "visual": "🏃‍♂️🗼",
+       "choices": [
+         {
+           "text": "进入第三章",
+           "next_chapter": "chapter3",
+           "next_node": "start",
+           "effect": {}
+         }
+       ]
+    }
+  }
+}
