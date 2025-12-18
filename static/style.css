@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Noto+Serif+SC:wght@400;700&display=swap');
+
+:root {
+    --bg-color: #050505;
+    --text-color: #33ff00; /* Amber: #ffb000, Green: #33ff00 */
+    --text-dim: #1a8000;
+    --scan-color: rgba(18, 16, 16, 0.5);
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'VT323', 'Noto Serif SC', sans-serif;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0 0 5px var(--text-dim);
+}
+
+.container {
+    width: 800px;
+    max-width: 90%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border: 2px solid var(--text-color);
+    box-shadow: 0 0 20px var(--text-dim);
+}
+
+header {
+    border-bottom: 2px solid var(--text-color);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    letter-spacing: 5px;
+}
+
+#stats-bar {
+    font-size: 1.2rem;
+}
+
+#game-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.visual-art {
+    font-size: 4rem;
+    text-align: center;
+    margin-bottom: 20px;
+    height: 80px;
+    animation: pulse 4s infinite;
+}
+
+#text-display {
+    font-size: 1.5rem;
+    line-height: 1.4;
+    margin-bottom: 30px;
+    min-height: 150px;
+}
+
+#choices-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+button {
+    background: transparent;
+    border: 1px solid var(--text-color);
+    color: var(--text-color);
+    font-family: 'VT323', 'Noto Serif SC', sans-serif;
+    font-size: 1.4rem;
+    padding: 10px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+button:hover {
+    background: var(--text-color);
+    color: var(--bg-color);
+}
+
+/* CRT Effects */
+.scanlines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(0,0,0,0.2) 50%,
+        rgba(0,0,0,0.2)
+    );
+    background-size: 100% 4px;
+    z-index: 10;
+    pointer-events: none;
+    animation: scan 10s linear infinite;
+}
+
+.crt-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(
+        circle,
+        rgba(0,0,0,0) 50%,
+        rgba(0,0,0,0.4) 90%
+    );
+    z-index: 11;
+    pointer-events: none;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+.glitch {
+    animation: glitch-anim 0.3s cubic-bezier(.25, .46, .45, .94) both;
+}
+
+@keyframes glitch-anim {
+    0% { transform: translate(0) }
+    20% { transform: translate(-2px, 2px) }
+    40% { transform: translate(-2px, -2px) }
+    60% { transform: translate(2px, 2px) }
+    80% { transform: translate(2px, -2px) }
+    100% { transform: translate(0) }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-track {
+    background: #000;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--text-color);
+}

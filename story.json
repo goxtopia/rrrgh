@@ -1,0 +1,283 @@
+{
+  "title": "迷雾港口 (Mist Harbor)",
+  "author": "Jules",
+  "initial_state": {
+    "sanity": 100,
+    "inventory": []
+  },
+  "start_node": "intro",
+  "nodes": {
+    "intro": {
+      "text": "你乘坐的小船在浓雾中撞上了暗礁。你不得不弃船游向岸边。这里是迷雾港口，一个在地图上未曾标注的渔村。空气中弥漫着死鱼和某种更古老、更腐败的气味。\n\n你浑身湿透，站在码头上。",
+      "visual": "🌫️🛶⚓",
+      "choices": [
+        {
+          "text": "走向那盏昏黄的路灯",
+          "next_node": "street_lamp",
+          "effect": {}
+        },
+        {
+          "text": "检查码头边的旧木箱",
+          "next_node": "dock_box",
+          "effect": {}
+        }
+      ]
+    },
+    "dock_box": {
+      "text": "木箱上覆盖着粘稠的绿色藻类。你费力地撬开它，里面没有货物，只有一尊奇怪的石像。它看起来像是一个长着章鱼脑袋的人。注视着它让你感到一阵恶心。",
+      "visual": "📦🗿🤢",
+      "choices": [
+        {
+          "text": "拿走石像",
+          "next_node": "street_lamp",
+          "effect": {
+            "sanity": -10,
+            "add_item": "idol"
+          }
+        },
+        {
+          "text": "把它扔回海里，赶紧离开",
+          "next_node": "street_lamp",
+          "effect": {
+            "sanity": 5
+          }
+        }
+      ]
+    },
+    "street_lamp": {
+      "text": "你来到了街道上。昏黄的煤气灯只能照亮几步远的距离。左边传来嘈杂的人声，似乎是个酒馆；右边是一条通往山顶灯塔的蜿蜒小路。",
+      "visual": "💡🏚️🌲",
+      "choices": [
+        {
+          "text": "去酒馆 (老水手之梦)",
+          "next_node": "tavern",
+          "effect": {}
+        },
+        {
+          "text": "爬山去灯塔",
+          "next_node": "lighthouse_path",
+          "effect": {}
+        }
+      ]
+    },
+    "tavern": {
+      "text": "推开沉重的橡木门，酒馆里瞬间安静下来。几十双眼睛盯着你——这些人的眼距过宽，皮肤呈现出不健康的灰绿色。一个独眼的老人坐在角落里，手里把玩着一枚金币。",
+      "visual": "🍺👁️🪙",
+      "choices": [
+        {
+          "text": "向老人打听消息",
+          "next_node": "old_man_talk",
+          "effect": {}
+        },
+        {
+          "text": "点一杯酒坐下",
+          "next_node": "drink_bad",
+          "effect": {
+            "sanity": -5
+          }
+        }
+      ]
+    },
+    "drink_bad": {
+      "text": "酒液粘稠且带着腥味。喝下去后，你感觉喉咙像在燃烧，脑海中开始出现幻听。",
+      "visual": "🥃😵💫",
+      "choices": [
+        {
+          "text": "摇摇晃晃地走出酒馆",
+          "next_node": "street_lamp",
+          "effect": {}
+        }
+      ]
+    },
+    "old_man_talk": {
+      "text": "老人咧嘴笑了，露出锯齿状的牙齿。“外乡人，你也听到了那个呼唤吗？在深渊里... 达贡在等待。” 他突然抓住你的手，你看到了他手掌间的蹼。",
+      "visual": "👴🕸️🗣️",
+      "choices": [
+        {
+          "text": "挣脱并询问灯塔的事",
+          "next_node": "old_man_secret",
+          "effect": {}
+        },
+        {
+          "text": "给他看你在码头捡到的石像",
+          "next_node": "show_idol",
+          "condition": {
+            "has_item": "idol"
+          },
+          "effect": {}
+        },
+        {
+          "text": "这太疯狂了，逃离酒馆",
+          "next_node": "street_lamp",
+          "effect": {
+             "sanity": -5
+          }
+        }
+      ]
+    },
+    "show_idol": {
+      "text": "老人看到石像，眼球几乎突出来。他跪在地上开始膜拜。“使者！使者来了！” 整个酒馆的人都围了上来。你意识到你犯了一个致命的错误。",
+      "visual": "🛐🔪🩸",
+      "choices": [
+        {
+          "text": "结局",
+          "next_node": "ending_sacrificed",
+          "effect": {}
+        }
+      ]
+    },
+    "old_man_secret": {
+      "text": "“灯塔？嘿嘿...那不是灯塔。那是‘封印’。但火就要熄灭了。如果你要去，带上这个。” 老人塞给你一把生锈的左轮手枪，“只有一发子弹，留给自己的。”",
+      "visual": "🔫📜🗝️",
+      "choices": [
+        {
+          "text": "拿上枪，去灯塔",
+          "next_node": "lighthouse_path",
+          "effect": {
+            "add_item": "gun"
+          }
+        }
+      ]
+    },
+    "lighthouse_path": {
+      "text": "山路泥泞不堪。越往上走，雾气越发稀薄，但天空中的月亮呈现出诡异的血红色。你感觉有什么东西在树林里窥视着你。",
+      "visual": "🌙🌲👣",
+      "choices": [
+        {
+          "text": "加快脚步",
+          "next_node": "lighthouse_door",
+          "effect": {
+            "sanity": -5
+          }
+        },
+        {
+          "text": "停下来仔细聆听",
+          "next_node": "forest_whisper",
+          "effect": {}
+        }
+      ]
+    },
+    "forest_whisper": {
+      "text": "你屏住呼吸。那声音不是风声，而是某种低频的吟唱：“Cthulhu R'lyeh wgah'nagl fhtagn...” 你的理智在崩溃边缘。",
+      "visual": "👂🔊🤪",
+      "choices": [
+        {
+          "text": "捂住耳朵尖叫着跑向灯塔",
+          "next_node": "lighthouse_door",
+          "effect": {
+            "sanity": -15
+          }
+        }
+      ]
+    },
+    "lighthouse_door": {
+      "text": "你站在灯塔巨大的铁门前。门虚掩着，里面透出幽幽的绿光。",
+      "visual": "🗼🚪🟢",
+      "choices": [
+        {
+          "text": "推门而入",
+          "next_node": "lighthouse_top",
+          "effect": {}
+        }
+      ]
+    },
+    "lighthouse_top": {
+      "text": "你爬上旋转楼梯来到塔顶。这里没有灯泡，只有一个巨大的水晶，里面囚禁着某种蠕动的阴影。水晶出现了裂痕。一个穿着长袍的人影正试图打碎它。",
+      "visual": "💎🔨👺",
+      "choices": [
+        {
+          "text": "用枪射击那个长袍人",
+          "next_node": "shoot_cultist",
+          "condition": {
+            "has_item": "gun"
+          },
+          "effect": {}
+        },
+        {
+          "text": "冲上去阻止他",
+          "next_node": "fight_cultist",
+          "effect": {}
+        },
+        {
+          "text": "这超出了人类的能力，跳窗逃生",
+          "next_node": "ending_coward",
+          "effect": {}
+        }
+      ]
+    },
+    "shoot_cultist": {
+      "text": "你扣动扳机。枪声在狭窄的空间里回荡。长袍人倒下了。你走近一看，发现他的脸竟然和你一模一样。你感到世界开始旋转...",
+      "visual": "🔫💀🌀",
+      "choices": [
+        {
+          "text": "结局",
+          "next_node": "ending_loop",
+          "effect": {}
+        }
+      ]
+    },
+    "fight_cultist": {
+      "text": "你冲了上去，但长袍人的力量大得惊人。他把你推向水晶。当你触碰到水晶的那一刻，你的意识被吸入了无尽的虚空。",
+      "visual": "👊🌌🧠",
+      "choices": [
+        {
+          "text": "结局",
+          "next_node": "ending_madness",
+          "effect": {}
+        }
+      ]
+    },
+    "ending_sacrificed": {
+      "text": "【结局：献祭】\n你被当作唤醒古神的高级祭品。在痛苦中，你见证了真正的绝望。迷雾港口将永远保留你的骨骸。",
+      "visual": "☠️🩸🔚",
+      "choices": [
+        {
+          "text": "重新开始噩梦",
+          "next_node": "intro",
+          "effect": {
+            "reset": true
+          }
+        }
+      ]
+    },
+    "ending_coward": {
+      "text": "【结局：幸存者】\n你跳入大海，奇迹般地被一艘过路的商船救起。没有人相信你的故事。你在精神病院度过了余生，每当起雾时，你都会尖叫。",
+      "visual": "🏥🛌🌫️",
+      "choices": [
+        {
+          "text": "重新开始",
+          "next_node": "intro",
+          "effect": {
+            "reset": true
+          }
+        }
+      ]
+    },
+    "ending_loop": {
+      "text": "【结局：轮回】\n你看着倒下的自己，突然意识到这已经发生过无数次了。你捡起长袍穿上，等待下一个来到塔顶的人。你必须打破水晶，打破这个诅咒...或者你才是诅咒本身？",
+      "visual": "🔄🎭♾️",
+      "choices": [
+        {
+          "text": "再次尝试打破轮回",
+          "next_node": "intro",
+          "effect": {
+            "reset": true
+          }
+        }
+      ]
+    },
+    "ending_madness": {
+      "text": "【结局：深渊】\n你成为了古神梦境中的一部分。人类的理智对你来说已经毫无意义。Iä! Iä! Cthulhu fhtagn!",
+      "visual": "🐙🌌🤪",
+      "choices": [
+        {
+          "text": "拥抱混乱 (重置)",
+          "next_node": "intro",
+          "effect": {
+            "reset": true
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>迷雾港口 | Mist Harbor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="crt-overlay"></div>
+    <div class="scanlines"></div>
+
+    <div class="container">
+        <header>
+            <h1>MIST HARBOR</h1>
+            <div id="stats-bar">
+                <span id="sanity-display">SANITY: 100%</span> |
+                <span id="inventory-display">INV: []</span>
+            </div>
+        </header>
+
+        <main id="game-area">
+            <div id="visual-display" class="visual-art"></div>
+            <div id="text-display" class="typewriter"></div>
+            <div id="choices-container">
+                <button onclick="startGame()">START GAME</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let isTyping = false;
+        let typingTimer = null;
+
+        async function startGame() {
+            const response = await fetch('/start', { method: 'POST' });
+            const data = await response.json();
+            updateUI(data);
+        }
+
+        async function makeChoice(index) {
+            if (isTyping) {
+                // Instantly finish typing (optional feature for impatient players)
+                // For now, let's just ignore clicks while typing or allow instant display
+            }
+            const response = await fetch('/choice', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ index: index })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                updateUI(data);
+            } else {
+                console.error('Error making choice');
+            }
+        }
+
+        function updateUI(data) {
+            // Clear any existing typing timer
+            if (typingTimer) {
+                clearTimeout(typingTimer);
+                typingTimer = null;
+            }
+
+            // Update Stats
+            document.getElementById('sanity-display').innerText = `SANITY: ${data.stats.sanity}%`;
+
+            const invText = data.stats.inventory.length > 0 ? data.stats.inventory.join(', ') : 'EMPTY';
+            document.getElementById('inventory-display').innerText = `INV: [${invText}]`;
+
+            // Update Visual
+            const visualDiv = document.getElementById('visual-display');
+            visualDiv.innerText = data.visual;
+            visualDiv.classList.remove('glitch');
+            void visualDiv.offsetWidth; // trigger reflow
+            visualDiv.classList.add('glitch');
+
+            // Update Text (Typewriter effect)
+            const textDiv = document.getElementById('text-display');
+            textDiv.innerHTML = '';
+            typeWriter(data.text, textDiv);
+
+            // Update Choices
+            const choicesDiv = document.getElementById('choices-container');
+            choicesDiv.innerHTML = '';
+
+            // We delay showing choices until typing is done?
+            // For responsiveness, let's show them immediately but maybe fade in.
+            data.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.innerText = `> ${choice.text}`;
+                btn.onclick = () => makeChoice(choice.index);
+                choicesDiv.appendChild(btn);
+            });
+        }
+
+        function typeWriter(text, element) {
+            isTyping = true;
+            let i = 0;
+            const speed = 30;
+
+            function type() {
+                if (i < text.length) {
+                    if (text.charAt(i) === '\n') {
+                        element.innerHTML += '<br>';
+                    } else {
+                        element.innerHTML += text.charAt(i);
+                    }
+                    i++;
+                    typingTimer = setTimeout(type, speed);
+                } else {
+                    isTyping = false;
+                    typingTimer = null;
+                }
+            }
+            type();
+        }
+    </script>
+</body>
+</html>
