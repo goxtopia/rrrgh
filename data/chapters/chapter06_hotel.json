@@ -3,12 +3,22 @@
   "start_node": "start",
   "nodes": {
     "start": {
-      "text": "旅馆的大厅空无一人，只有柜台上的铃铛落满了灰尘。",
+      "text": "“海景旅馆”的霓虹灯招牌只有一半在亮，发出滋滋的电流声。大厅里空无一人，只有柜台上的铃铛落满了灰尘。墙上的挂钟永远停在了午夜十二点。这里与其说是旅馆，不如说是鬼屋。",
       "visual": "🏨🛎️",
       "choices": [
         {
-          "text": "休息一晚 (恢复 Sanity)",
-          "next_node": "rest",
+          "text": "按响铃铛",
+          "next_node": "ring_bell",
+          "effect": {}
+        },
+        {
+          "text": "自行寻找空房间",
+          "next_node": "find_room",
+          "effect": {}
+        },
+        {
+          "text": "在大厅沙发上休息",
+          "next_node": "sleep_lobby",
           "effect": {}
         },
         {
@@ -19,15 +29,222 @@
         }
       ]
     },
-    "rest": {
-      "text": "你做了一晚上的噩梦，梦见巨大的触手将世界拖入深渊。但你的精神稍微恢复了一些。",
-      "visual": "🛌💤",
+    "ring_bell": {
+      "text": "清脆的铃声在空旷的大厅里回荡。过了很久，一个脸色苍白的侍者从后面走出来，他的动作僵硬，仿佛提线木偶。“欢迎光临...您想要什么？”",
+      "visual": "🔔🧟‍♂️",
       "choices": [
         {
-          "text": "醒来",
+          "text": "我要一间房",
+          "next_node": "get_room_key",
+          "effect": {}
+        },
+        {
+          "text": "这里还有别的客人吗？",
+          "next_node": "ask_guests",
+          "effect": {}
+        }
+      ]
+    },
+    "get_room_key": {
+      "text": "侍者递给你一把沉重的黄铜钥匙，上面刻着“303”。“不要去四楼...那里在装修。”他毫无感情地说道。",
+      "visual": "🗝️🚫",
+      "choices": [
+        {
+          "text": "上楼去303",
+          "next_node": "room_303",
+          "effect": {}
+        },
+        {
+          "text": "偷偷去四楼看看",
+          "next_node": "floor_4",
+          "effect": {}
+        }
+      ]
+    },
+    "ask_guests": {
+      "text": "“客人？哦，是的，都在休息。永远地休息。”侍者露出了一个诡异的微笑。",
+      "visual": "😊💀",
+      "choices": [
+        {
+          "text": "好吧，给我钥匙",
+          "next_node": "get_room_key",
+          "effect": { "sanity": -2 }
+        }
+      ]
+    },
+    "find_room": {
+      "text": "你走上楼梯。地毯发霉，墙纸剥落。大部分房间都锁着，但你发现202号房门虚掩着。",
+      "visual": "🚪🕳️",
+      "choices": [
+        {
+          "text": "进入202",
+          "next_node": "room_202",
+          "effect": {}
+        },
+        {
+          "text": "继续找其他房间",
+          "next_node": "corridor_encounter",
+          "effect": {}
+        }
+      ]
+    },
+    "room_303": {
+      "text": "303房间很小，只有一张床和一个破旧的梳妆台。窗外是漆黑的大海。海浪声在这里听起来格外清晰，仿佛就在耳边。",
+      "visual": "🛏️🌊",
+      "choices": [
+        {
+          "text": "锁好门，睡觉",
+          "next_node": "dream_sequence",
+          "effect": {}
+        },
+        {
+          "text": "检查房间",
+          "next_node": "inspect_room_303",
+          "effect": {}
+        }
+      ]
+    },
+    "inspect_room_303": {
+      "text": "你在床垫下发现了一本旧日记。日记的主人似乎是一个画家，他在日记中疯狂地描绘着“窗外的眼睛”。",
+      "visual": "📔👀",
+      "choices": [
+        {
+          "text": "看向窗外",
+          "next_node": "window_scare",
+          "effect": {}
+        },
+        {
+          "text": "睡觉",
+          "next_node": "dream_sequence",
+          "effect": {}
+        }
+      ]
+    },
+    "window_scare": {
+      "text": "你拉开窗帘。外面是一片黑暗，但你隐约看到在海面上，有两个巨大的绿色光点正在浮动，正对着你的窗户。那是...眼睛吗？足有房屋那么大！",
+      "visual": "👁️👁️",
+      "choices": [
+        {
+          "text": "拉上窗帘，瑟瑟发抖",
+          "next_node": "dream_sequence",
+          "effect": { "sanity": -10 }
+        }
+      ]
+    },
+    "room_202": {
+      "text": "房间里乱七八糟，行李箱被翻得底朝天。看来之前的住客离开得很匆忙。墙上用口红写着：“不要睡着！”",
+      "visual": "💄⚠️",
+      "choices": [
+        {
+          "text": "搜查行李",
+          "next_node": "search_luggage",
+          "effect": {}
+        },
+        {
+          "text": "听从建议，保持清醒",
+          "next_node": "stay_awake",
+          "effect": { "sanity": -5 }
+        }
+      ]
+    },
+    "search_luggage": {
+      "text": "你在行李箱夹层里发现了一瓶未开封的威士忌和一些现金。",
+      "visual": "🥃💵",
+      "choices": [
+        {
+          "text": "拿走",
+          "next_node": "start",
+          "effect": { "add_item": ["alcohol", "money"] }
+        }
+      ]
+    },
+    "floor_4": {
+      "text": "四楼的空气异常寒冷。走廊尽头有一扇红色的门，门缝里透出红光。你能听到里面传来湿润的咀嚼声。",
+      "visual": "🚪🔴",
+      "choices": [
+        {
+          "text": "靠近那扇门",
+          "next_node": "red_door",
+          "effect": {}
+        },
+        {
+          "text": "太可怕了，下楼",
+          "next_node": "get_room_key",
+          "effect": {}
+        }
+      ]
+    },
+    "red_door": {
+      "text": "你刚靠近，门突然猛地打开了！一只苍白的手抓住了你的脚踝。你拼命挣扎，踢开了那只手，滚下了楼梯。",
+      "visual": "🖐️🦶",
+      "choices": [
+        {
+          "text": "逃回大厅",
+          "next_node": "start",
+          "effect": { "sanity": -10, "update_stats": { "hp": -10 } }
+        }
+      ]
+    },
+    "dream_sequence": {
+      "text": "你陷入了不安的睡眠。梦中，你站在一座巨大的水下城市前，几何结构违背了欧几里得定律。一个声音在呼唤你：“加入我们...加入我们...”你醒来时浑身冷汗，但精神似乎恢复了一些。",
+      "visual": "💤🏙️",
+      "choices": [
+        {
+          "text": "整理装备，准备出发",
           "next_chapter": "chapter02_town_square",
           "next_node": "start",
           "effect": { "sanity": 10 }
+        }
+      ]
+    },
+    "stay_awake": {
+      "text": "你强撑着眼皮坐了一整夜。每当你要睡着时，就会听到墙壁里传来抓挠的声音。这简直是折磨。",
+      "visual": "☕😫",
+      "choices": [
+        {
+          "text": "天亮了，赶紧离开",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": { "sanity": -5 }
+        }
+      ]
+    },
+    "sleep_lobby": {
+      "text": "你在沙发上蜷缩了一晚。虽然很不舒服，而且那个侍者一直盯着你看，但至少没有发生怪事。",
+      "visual": "🛋️👀",
+      "choices": [
+        {
+          "text": "离开",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": { "sanity": 5 }
+        }
+      ]
+    },
+    "corridor_encounter": {
+      "text": "走廊尽头站着一个小女孩，穿着维多利亚时代的裙子。她背对着你，正在玩球。球滚到了你脚边。",
+      "visual": "👧⚽",
+      "choices": [
+        {
+          "text": "捡起球还给她",
+          "next_node": "give_ball",
+          "effect": {}
+        },
+        {
+          "text": "无视她，下楼",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "give_ball": {
+      "text": "你捡起球，却发现那是...一颗风干的人头！当你抬头时，那个女孩不见了，只留下一串咯咯的笑声。",
+      "visual": "💀👻",
+      "choices": [
+        {
+          "text": "尖叫着跑下楼",
+          "next_node": "start",
+          "effect": { "sanity": -10 }
         }
       ]
     }

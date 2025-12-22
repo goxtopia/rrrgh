@@ -3,12 +3,17 @@
   "start_node": "start",
   "nodes": {
     "start": {
-      "text": "海蚀洞里潮湿阴冷。岩壁上长满了发光的苔藓。",
-      "visual": "🕳️💧",
+      "text": "海蚀洞的入口像一个巨大的伤口，海水在里面进出，发出雷鸣般的轰鸣。潮水正在上涨，如果你动作不够快，就会被淹死在里面。洞穴深处闪烁着幽幽的蓝光。",
+      "visual": "🕳️🌊",
       "choices": [
         {
-          "text": "深入洞穴",
-          "next_node": "deep_cave",
+          "text": "涉水进入",
+          "next_node": "wade_in",
+          "effect": {}
+        },
+        {
+          "text": "查看潮汐标记",
+          "next_node": "check_tides",
           "effect": {}
         },
         {
@@ -19,30 +24,155 @@
         }
       ]
     },
-    "deep_cave": {
-      "text": "你发现了一个地下湖。湖中心似乎有什么东西在发光。",
-      "visual": "🌊💎",
+    "check_tides": {
+      "text": "岩壁上的藤壶显示，再过一小时这里就会被完全淹没。你必须在涨潮前找到通往上层的路。",
+      "visual": "⏰🌊",
       "choices": [
         {
-          "text": "游过去",
-          "next_node": "swim",
-          "effect": {}
-        },
-        {
-          "text": "返回",
-          "next_node": "start",
+          "text": "抓紧时间",
+          "next_node": "wade_in",
           "effect": {}
         }
       ]
     },
-    "swim": {
-      "text": "你在湖底找到了一块刻有符文的石板。",
-      "visual": "🏊‍♂️🪨",
+    "wade_in": {
+      "text": "水冷得刺骨。你艰难地向前走。洞穴分成了两条路：左边传来风声，右边有光。",
+      "visual": "❄️🛤️",
       "choices": [
         {
-          "text": "带走石板",
-          "next_node": "start",
+          "text": "走左边 (风声)",
+          "next_node": "wind_tunnel",
+          "effect": {}
+        },
+        {
+          "text": "走右边 (光亮)",
+          "next_node": "light_tunnel",
+          "effect": {}
+        }
+      ]
+    },
+    "light_tunnel": {
+      "text": "你走向光亮。但那不是出口，而是发光的苔藓。而且，这里是死路。一个巨大的螃蟹状生物挡住了你。",
+      "visual": "🦀💡",
+      "choices": [
+        {
+          "text": "战斗",
+          "next_node": "fight_crab",
+          "effect": {}
+        },
+        {
+          "text": "逃跑",
+          "next_node": "wade_in",
+          "effect": { "update_stats": { "hp": -2 } }
+        }
+      ]
+    },
+    "fight_crab": {
+      "text": "[STR] 攻击它的软腹 (Roll + STR > 14)",
+      "roll": {
+         "dice": "1d20",
+         "bonus_stat": "str",
+         "target": 14,
+         "condition": "gt",
+         "success_node": "crab_dead",
+         "failure_node": "crab_hurt"
+      },
+      "next_node": "dummy"
+    },
+    "crab_dead": {
+      "text": "你杀死了怪物。在它身后的缝隙里，你找到了一块刻着符文的石板。",
+      "visual": "🪨✅",
+      "choices": [
+        {
+          "text": "拿走石板",
+          "next_node": "wade_in",
           "effect": { "add_item": "rune_stone" }
+        }
+      ]
+    },
+    "crab_hurt": {
+      "text": "它的钳子夹住了你的手臂。你拼命挣脱，受了伤。",
+      "visual": "🤕🩸",
+      "choices": [
+        {
+          "text": "逃回分岔口",
+          "next_node": "wade_in",
+          "effect": { "update_stats": { "hp": -5 } }
+        }
+      ]
+    },
+    "wind_tunnel": {
+      "text": "这边的路向上延伸。你发现了一个地下湖。湖中心有一个小岛，岛上似乎有人工建筑的痕迹。",
+      "visual": "🏝️🏗️",
+      "choices": [
+        {
+          "text": "游过去",
+          "next_node": "swim_lake",
+          "effect": {}
+        },
+        {
+          "text": "沿着边缘走",
+          "next_node": "walk_edge",
+          "effect": {}
+        }
+      ]
+    },
+    "swim_lake": {
+      "text": "[STR] 游泳 (Roll + STR > 12)",
+      "roll": {
+         "dice": "1d20",
+         "bonus_stat": "str",
+         "target": 12,
+         "condition": "gt",
+         "success_node": "island_arrival",
+         "failure_node": "swim_fail"
+      },
+      "next_node": "dummy"
+    },
+    "swim_fail": {
+      "text": "水里有什么东西抓住了你的脚！你拼命挣扎才没被拖下去，但你不得不游回岸边。",
+      "visual": "🐙⚠️",
+      "choices": [
+        {
+          "text": "沿着边缘走",
+          "next_node": "walk_edge",
+          "effect": { "sanity": -2, "update_stats": { "hp": -2 } }
+        }
+      ]
+    },
+    "island_arrival": {
+      "text": "你爬上小岛。这里有一个祭坛，上面放着一把钥匙。这是灯塔密道的钥匙！",
+      "visual": "🗝️🏝️",
+      "choices": [
+        {
+          "text": "拿走钥匙",
+          "next_node": "walk_edge",
+          "effect": { "add_item": "lighthouse_key" }
+        }
+      ]
+    },
+    "walk_edge": {
+      "text": "你绕过了地下湖，发现了一条通往上方的阶梯。阶梯尽头是一扇铁门。门上有一个钥匙孔。",
+      "visual": "🪜🚪",
+      "choices": [
+        {
+          "text": "使用灯塔钥匙",
+          "next_chapter": "chapter19_lighthouse_base",
+          "next_node": "secret_entry",
+          "condition": { "has_item": "lighthouse_key" },
+          "effect": {}
+        },
+        {
+          "text": "使用酒馆老板给的钥匙",
+          "next_chapter": "chapter19_lighthouse_base",
+          "next_node": "secret_entry",
+          "condition": { "has_item": "cave_key" },
+          "effect": {}
+        },
+        {
+          "text": "没钥匙，只能原路返回",
+          "next_node": "start",
+          "effect": {}
         }
       ]
     }

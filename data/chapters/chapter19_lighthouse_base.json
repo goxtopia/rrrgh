@@ -3,31 +3,116 @@
   "start_node": "start",
   "nodes": {
     "start": {
-      "text": "黑岩灯塔高耸入云。入口处有两个狂热的信徒在把守。",
-      "visual": "🗼👺",
+      "text": "黑岩灯塔如同一根巨大的手指，指责着苍天。塔基周围布满了防御工事：沙袋、铁丝网，还有几个全副武装的狂热信徒在巡逻。海浪拍打着岩石，掩盖了他们的脚步声。这里是最后的防线。",
+      "visual": "🗼🛡️",
       "choices": [
         {
-          "text": "战斗",
-          "next_node": "fight",
-          "condition": { "has_item": "revolver" },
+          "text": "观察敌人配置",
+          "next_node": "scout_enemies",
           "effect": {}
         },
         {
-          "text": "潜行",
-          "next_node": "sneak",
+          "text": "寻找发电机房破坏电源",
+          "next_node": "find_generator",
           "effect": {}
         },
         {
-          "text": "出示护身符",
-          "next_node": "show_amulet",
+          "text": "强攻正门",
+          "next_node": "frontal_assault",
+          "effect": {}
+        },
+        {
+          "text": "尝试伪装混入",
+          "next_node": "disguise_entry",
           "condition": { "has_item": "dagon_amulet" },
           "effect": {}
         }
       ]
     },
-    "fight": {
-      "text": "你开枪解决了他们。",
-      "visual": "🔫💥",
+    "secret_entry": {
+      "text": "你从海蚀洞的密道出来，直接进入了灯塔的地下室。这里堆满了炸药桶。",
+      "visual": "💣🚪",
+      "choices": [
+        {
+          "text": "设置炸药",
+          "next_node": "plant_bomb",
+          "effect": {}
+        },
+        {
+          "text": "悄悄上楼",
+          "next_chapter": "chapter20_lighthouse_top",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "plant_bomb": {
+      "text": "你设置了引信。如果你失败了，至少可以同归于尽。",
+      "visual": "🧨✅",
+      "choices": [
+        {
+          "text": "上楼",
+          "next_chapter": "chapter20_lighthouse_top",
+          "next_node": "start",
+          "effect": { "add_item": "bomb_set" }
+        }
+      ]
+    },
+    "scout_enemies": {
+      "text": "有三个守卫。一个在门口，两个在巡逻。门口那个看起来像是小头目，腰里挂着一串钥匙。",
+      "visual": "👮‍♂️🗝️",
+      "choices": [
+        {
+          "text": "狙击头目 (如果有枪)",
+          "next_node": "snipe_leader",
+          "condition": { "has_item": "rifle" },
+          "effect": {}
+        },
+        {
+          "text": "引开巡逻兵",
+          "next_node": "distract_guards",
+          "effect": {}
+        }
+      ]
+    },
+    "snipe_leader": {
+      "text": "砰！头目应声倒地。其他守卫慌了。你趁乱冲了过去。",
+      "visual": "🔫🎯",
+      "choices": [
+        {
+          "text": "捡起钥匙进门",
+          "next_chapter": "chapter20_lighthouse_top",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "distract_guards": {
+      "text": "你扔了一块石头。两个巡逻兵去查看了。现在只剩门口的一个。",
+      "visual": "🪨👀",
+      "choices": [
+        {
+          "text": "潜行背刺",
+          "next_node": "backstab_guard",
+          "effect": {}
+        }
+      ]
+    },
+    "backstab_guard": {
+      "text": "[DEX] 潜行攻击 (Roll + DEX > 14)",
+      "roll": {
+         "dice": "1d20",
+         "bonus_stat": "dex",
+         "target": 14,
+         "condition": "gt",
+         "success_node": "kill_guard",
+         "failure_node": "guard_alert"
+      },
+      "next_node": "dummy"
+    },
+    "kill_guard": {
+      "text": "你捂住他的嘴，匕首刺入心脏。他无声地倒下了。",
+      "visual": "🗡️🤫",
       "choices": [
         {
           "text": "进入塔内",
@@ -37,24 +122,90 @@
         }
       ]
     },
-    "sneak": {
-      "text": "你从后窗爬了进去。",
-      "visual": "🪟🤫",
+    "guard_alert": {
+      "text": "他发现了你！他开枪了，虽然没打中，但警报响了。",
+      "visual": "🚨🔫",
       "choices": [
         {
-          "text": "爬上楼梯",
+          "text": "强行冲进去",
           "next_chapter": "chapter20_lighthouse_top",
           "next_node": "start",
+          "effect": { "update_stats": { "hp": -5 } }
+        }
+      ]
+    },
+    "find_generator": {
+      "text": "发电机房在侧面。如果你切断电源，或许能阻止仪式的一部分。",
+      "visual": "⚡🏭",
+      "choices": [
+        {
+          "text": "破坏发电机",
+          "next_node": "sabotage_gen",
+          "condition": { "has_item": "crowbar" },
           "effect": {}
         }
       ]
     },
-    "show_amulet": {
-      "text": "信徒们恭敬地为你让路。",
-      "visual": "🧿🙏",
+    "sabotage_gen": {
+      "text": "你用撬棍砸烂了控制面板。火花四溅，灯塔的灯光熄灭了。上面传来了愤怒的吼叫。",
+      "visual": "💥🌑",
       "choices": [
         {
-          "text": "大摇大摆地进入",
+          "text": "趁黑潜入",
+          "next_chapter": "chapter20_lighthouse_top",
+          "next_node": "start",
+          "effect": { "add_item": "lights_out" }
+        }
+      ]
+    },
+    "frontal_assault": {
+      "text": "你像个疯子一样冲了上去。子弹在你身边呼啸。",
+      "visual": "🏃‍♂️💨",
+      "choices": [
+        {
+          "text": "[STR] 拼命 (Roll + STR > 18)",
+          "roll": {
+             "dice": "1d20",
+             "bonus_stat": "str",
+             "target": 18,
+             "condition": "gt",
+             "success_node": "assault_win",
+             "failure_node": "assault_fail"
+          },
+          "next_node": "dummy"
+        }
+      ]
+    },
+    "assault_win": {
+      "text": "奇迹般地，你冲过了防线，虽然受了伤，但你进去了。",
+      "visual": "🤕✅",
+      "choices": [
+        {
+          "text": "上楼",
+          "next_chapter": "chapter20_lighthouse_top",
+          "next_node": "start",
+          "effect": { "update_stats": { "hp": -5 } }
+        }
+      ]
+    },
+    "assault_fail": {
+      "text": "你中弹了。世界变成了黑色。",
+      "visual": "💀🔚",
+      "choices": [
+        {
+          "text": "结局：无名尸体 (重启)",
+          "next_chapter": "chapter01_arrival",
+          "next_node": "start",
+          "effect": { "reset": true }
+        }
+      ]
+    },
+    "disguise_entry": {
+      "text": "你戴上兜帽，拿出护身符。守卫看了看护身符，点了点头：“为了大衮。”",
+      "visual": "🙏🧿",
+      "choices": [
+        {
+          "text": "“为了大衮。” (进入)",
           "next_chapter": "chapter20_lighthouse_top",
           "next_node": "start",
           "effect": {}

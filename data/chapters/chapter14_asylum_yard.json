@@ -3,48 +3,203 @@
   "start_node": "start",
   "nodes": {
     "start": {
-      "text": "疯人院的高墙耸立在面前，铁门紧闭。院子里杂草丛生。",
-      "visual": "🏥🌲",
+      "text": "黑水精神病院坐落在小镇边缘的悬崖上，四周被高墙和电网包围。院子里杂草丛生，几棵枯死的橡树像扭曲的手指伸向天空。探照灯的光束在院子里来回扫射，虽然现在是大白天，但这更增添了几分诡异。你能听到院子里传来的狗叫声。",
+      "visual": "🏥🐕",
       "choices": [
         {
-          "text": "翻墙进入",
-          "next_node": "climb_wall",
+          "text": "观察巡逻路线",
+          "next_node": "observe_patrol",
           "effect": {}
         },
         {
-          "text": "寻找侧门",
-          "next_node": "side_gate",
+          "text": "寻找电网的弱点",
+          "next_node": "check_fence",
           "effect": {}
         },
         {
-          "text": "返回镇上",
+          "text": "从正门强攻",
+          "next_node": "front_gate_attack",
+          "effect": {}
+        },
+        {
+          "text": "返回",
           "next_chapter": "chapter02_town_square",
           "next_node": "start",
           "effect": {}
         }
       ]
     },
-    "climb_wall": {
-      "text": "你费力地翻过了围墙，跳进了院子。",
-      "visual": "🧱🏃",
+    "observe_patrol": {
+      "text": "有两个守卫带着几只杜宾犬在巡逻。这些狗看起来不对劲，它们的眼睛发出绿光，而且体型大得离谱。守卫每隔五分钟就会经过大门。",
+      "visual": "👮‍♂️🐺",
+      "choices": [
+        {
+          "text": "扔肉块引开狗 (如果有肉)",
+          "next_node": "distract_dogs",
+          "condition": { "has_item": "food_rations" },
+          "effect": {}
+        },
+        {
+          "text": "等待时机，潜入",
+          "next_node": "sneak_in",
+          "effect": {}
+        }
+      ]
+    },
+    "check_fence": {
+      "text": "电网发出滋滋的声响。你在角落里发现了一个配电箱。上面的锁已经生锈了。",
+      "visual": "⚡🔌",
+      "choices": [
+        {
+          "text": "[DEX] 撬开配电箱并切断电源 (Roll + DEX > 14)",
+          "roll": {
+             "dice": "1d20",
+             "bonus_stat": "dex",
+             "target": 14,
+             "condition": "gt",
+             "success_node": "cut_power_success",
+             "failure_node": "cut_power_fail"
+          },
+          "next_node": "dummy"
+        },
+        {
+          "text": "直接翻墙 (SAN -2)",
+          "next_node": "climb_fence_shock",
+          "effect": { "sanity": -2 }
+        }
+      ]
+    },
+    "cut_power_success": {
+      "text": "你成功切断了电源。电网的嗡嗡声停止了。探照灯也熄灭了。现在是潜入的好机会。",
+      "visual": "🔌✅",
+      "choices": [
+        {
+          "text": "翻墙进入",
+          "next_chapter": "chapter15_asylum_wards",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "cut_power_fail": {
+      "text": "你不仅没能切断电源，反而触发了警报！红灯闪烁，警报声大作。",
+      "visual": "🚨⚠️",
+      "choices": [
+        {
+          "text": "赶紧跑！",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "climb_fence_shock": {
+      "text": "你刚碰到铁丝网，一股强大的电流就击中了你。你被弹飞了出去，浑身麻痹。",
+      "visual": "⚡😵",
+      "choices": [
+        {
+          "text": "痛苦地爬起来",
+          "next_node": "start",
+          "effect": { "update_stats": { "hp": -10 } }
+        }
+      ]
+    },
+    "distract_dogs": {
+      "text": "你把肉块扔向远处。那些怪狗立刻扑了过去，疯狂地撕咬肉块。守卫也过去查看情况了。",
+      "visual": "🍖🐶",
+      "choices": [
+        {
+          "text": "趁机溜进侧门",
+          "next_chapter": "chapter15_asylum_wards",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "sneak_in": {
+      "text": "你屏住呼吸，趁着探照灯移开的瞬间冲向阴影。这需要极高的技巧。",
+      "visual": "🥷🌑",
+      "choices": [
+        {
+          "text": "[DEX] 潜行判定 (Roll + DEX > 15)",
+          "roll": {
+             "dice": "1d20",
+             "bonus_stat": "dex",
+             "target": 15,
+             "condition": "gt",
+             "success_node": "sneak_success",
+             "failure_node": "sneak_fail"
+          },
+          "next_node": "dummy"
+        }
+      ]
+    },
+    "sneak_success": {
+      "text": "你像幽灵一样穿过了院子，没有任何人发现你。你来到了主楼的大门前。",
+      "visual": "👻✅",
       "choices": [
         {
           "text": "进入主楼",
           "next_chapter": "chapter15_asylum_wards",
           "next_node": "start",
-          "effect": { "update_stats": { "str": 1 } }
+          "effect": {}
         }
       ]
     },
-    "side_gate": {
-      "text": "侧门虽然生锈，但似乎没锁。",
-      "visual": "🚪🔓",
+    "sneak_fail": {
+      "text": "一只狗突然转过头，对着你狂吠。守卫立刻举起了枪。",
+      "visual": "🐕🔫",
       "choices": [
         {
-          "text": "进入",
+          "text": "举手投降",
+          "next_node": "captured",
+          "effect": {}
+        },
+        {
+          "text": "拼死一搏",
+          "next_node": "fight_guards",
+          "effect": {}
+        }
+      ]
+    },
+    "front_gate_attack": {
+      "text": "你决定不玩虚的，直接冲向正门。这简直是自杀行为。",
+      "visual": "⚔️🤪",
+      "choices": [
+        {
+          "text": "[STR] 强行突破 (Roll + STR > 18)",
+          "roll": {
+             "dice": "1d20",
+             "bonus_stat": "str",
+             "target": 18,
+             "condition": "gt",
+             "success_node": "fight_guards",
+             "failure_node": "captured"
+          },
+          "next_node": "dummy"
+        }
+      ]
+    },
+    "fight_guards": {
+      "text": "你与守卫展开了激烈的枪战（如果你有枪）或者肉搏。他们虽然也是人类，但眼神呆滞，仿佛被控制了。",
+      "visual": "🔫👊",
+      "choices": [
+        {
+          "text": "击倒他们，冲进去",
           "next_chapter": "chapter15_asylum_wards",
           "next_node": "start",
-          "effect": {}
+          "effect": { "update_stats": { "hp": -10 } }
+        }
+      ]
+    },
+    "captured": {
+      "text": "你被抓住了。他们把你拖进了主楼，扔进了一个软垫病房。“又来一个样本，哈洛威医生会很高兴的。”",
+      "visual": "⛓️🏥",
+      "choices": [
+        {
+          "text": "寻找逃脱机会",
+          "next_chapter": "chapter15_asylum_wards",
+          "next_node": "cell_start",
+          "effect": { "inventory": [] }
         }
       ]
     }
