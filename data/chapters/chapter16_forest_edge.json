@@ -1,0 +1,30 @@
+{
+  "title": "Forest Edge",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "小镇边缘是一片茂密的黑森林。树木扭曲，仿佛在痛苦地挣扎。",
+      "visual": "🌲🌑",
+      "choices": [
+        {
+          "text": "进入森林",
+          "next_chapter": "chapter17_deep_woods",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "沿着海岸走",
+          "next_chapter": "chapter18_sea_caves",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "返回镇上",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "title": "Deep Woods",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "森林深处，你听到某种巨大的生物在树冠间穿行的声音。",
+      "visual": "🌲👣",
+      "choices": [
+        {
+          "text": "躲藏",
+          "next_node": "hide",
+          "effect": {}
+        },
+        {
+          "text": "奔跑",
+          "next_node": "run",
+          "effect": { "sanity": -2 }
+        }
+      ]
+    },
+    "hide": {
+      "text": "你屏住呼吸。那东西过去了。你发现地上有一些发光的蘑菇。",
+      "visual": "🍄🤫",
+      "choices": [
+        {
+          "text": "采集蘑菇",
+          "next_node": "start",
+          "effect": { "add_item": "glowing_shroom" }
+        },
+        {
+          "text": "继续前进",
+          "next_chapter": "chapter19_lighthouse_base",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "run": {
+      "text": "你慌不择路，终于冲出了森林，来到了灯塔下。",
+      "visual": "🏃‍♂️🗼",
+      "choices": [
+        {
+          "text": "喘口气",
+          "next_chapter": "chapter19_lighthouse_base",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    }
+  }
+}

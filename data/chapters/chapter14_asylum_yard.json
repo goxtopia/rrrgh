@@ -1,0 +1,52 @@
+{
+  "title": "Asylum Yard",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "疯人院的高墙耸立在面前，铁门紧闭。院子里杂草丛生。",
+      "visual": "🏥🌲",
+      "choices": [
+        {
+          "text": "翻墙进入",
+          "next_node": "climb_wall",
+          "effect": {}
+        },
+        {
+          "text": "寻找侧门",
+          "next_node": "side_gate",
+          "effect": {}
+        },
+        {
+          "text": "返回镇上",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "climb_wall": {
+      "text": "你费力地翻过了围墙，跳进了院子。",
+      "visual": "🧱🏃",
+      "choices": [
+        {
+          "text": "进入主楼",
+          "next_chapter": "chapter15_asylum_wards",
+          "next_node": "start",
+          "effect": { "update_stats": { "str": 1 } }
+        }
+      ]
+    },
+    "side_gate": {
+      "text": "侧门虽然生锈，但似乎没锁。",
+      "visual": "🚪🔓",
+      "choices": [
+        {
+          "text": "进入",
+          "next_chapter": "chapter15_asylum_wards",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "title": "Lighthouse Base",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "黑岩灯塔高耸入云。入口处有两个狂热的信徒在把守。",
+      "visual": "🗼👺",
+      "choices": [
+        {
+          "text": "战斗",
+          "next_node": "fight",
+          "condition": { "has_item": "revolver" },
+          "effect": {}
+        },
+        {
+          "text": "潜行",
+          "next_node": "sneak",
+          "effect": {}
+        },
+        {
+          "text": "出示护身符",
+          "next_node": "show_amulet",
+          "condition": { "has_item": "dagon_amulet" },
+          "effect": {}
+        }
+      ]
+    },
+    "fight": {
+      "text": "你开枪解决了他们。",
+      "visual": "🔫💥",
+      "choices": [
+        {
+          "text": "进入塔内",
+          "next_chapter": "chapter20_lighthouse_top",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "sneak": {
+      "text": "你从后窗爬了进去。",
+      "visual": "🪟🤫",
+      "choices": [
+        {
+          "text": "爬上楼梯",
+          "next_chapter": "chapter20_lighthouse_top",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "show_amulet": {
+      "text": "信徒们恭敬地为你让路。",
+      "visual": "🧿🙏",
+      "choices": [
+        {
+          "text": "大摇大摆地进入",
+          "next_chapter": "chapter20_lighthouse_top",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    }
+  }
+}

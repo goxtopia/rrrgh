@@ -1,0 +1,35 @@
+{
+  "title": "Market",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "集市上摆满了奇怪的鱼和看起来不像是地球生物的肉块。",
+      "visual": "🐟🥩",
+      "choices": [
+        {
+          "text": "购买食物",
+          "next_node": "buy_food",
+          "effect": {}
+        },
+        {
+          "text": "离开",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "buy_food": {
+      "text": "你买了一些还能吃的干粮。",
+      "visual": "🍞💰",
+      "choices": [
+        {
+          "text": "离开",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": { "add_item": "food" }
+        }
+      ]
+    }
+  }
+}

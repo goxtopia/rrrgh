@@ -1,0 +1,60 @@
+{
+  "title": "Asylum Wards",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "病房走廊里回荡着尖叫声。墙壁上涂满了疯狂的涂鸦。",
+      "visual": "🏥😱",
+      "choices": [
+        {
+          "text": "寻找医生办公室",
+          "next_node": "doctor_office",
+          "effect": {}
+        },
+        {
+          "text": "查看病房",
+          "next_node": "check_room",
+          "effect": {}
+        }
+      ]
+    },
+    "doctor_office": {
+      "text": "你在办公室找到了关于绿色药剂的研究笔记。",
+      "visual": "👨‍⚕️📝",
+      "choices": [
+        {
+          "text": "阅读笔记",
+          "next_node": "read_notes",
+          "effect": { "add_item": "doctor_diary" }
+        },
+        {
+          "text": "离开",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "read_notes": {
+      "text": "笔记提到，只有在灯塔顶端注入毒药才能阻止仪式。",
+      "visual": "🧪🚫",
+      "choices": [
+        {
+          "text": "记住了",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "check_room": {
+      "text": "房间里关着一个半变异的病人，正在啃食自己的手指。",
+      "visual": "🧟‍♂️🩸",
+      "choices": [
+        {
+          "text": "逃离",
+          "next_node": "start",
+          "effect": { "sanity": -5 }
+        }
+      ]
+    }
+  }
+}

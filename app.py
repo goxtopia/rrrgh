@@ -11,10 +11,19 @@ app.secret_key = os.environ.get('SECRET_KEY', 'cthulhu_fhtagn_dev_key')
 CHAPTERS_DIR = 'data/chapters'
 # Cache for chapters to avoid re-reading disk too often
 CHAPTER_CACHE = {}
+RANDOM_EVENTS = []
 
 # In-memory storage for Live Mode sessions (simple dict for prototype)
 # Key: session_id (from cookie/secret), Value: list of messages
 LIVE_SESSIONS = {}
+
+def load_random_events():
+    global RANDOM_EVENTS
+    path = 'data/random_events.json'
+    if os.path.exists(path):
+        with open(path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            RANDOM_EVENTS = data.get('events', [])
 
 def load_chapter(chapter_name):
     if app.debug or chapter_name not in CHAPTER_CACHE:
@@ -32,21 +41,33 @@ def index():
 @app.route('/start', methods=['POST'])
 def start_game():
     session.clear()
-    # Default start: chapter1
-    initial_chapter = 'chapter1'
+    load_random_events()
+
+    # Default start: chapter01_arrival
+    initial_chapter = 'chapter01_arrival'
     story_data = load_chapter(initial_chapter)
 
     if not story_data:
-        return jsonify({'error': 'Story data not found'}), 500
+        # Fallback for compatibility if new files aren't ready
+        initial_chapter = 'chapter1'
+        story_data = load_chapter(initial_chapter)
+        if not story_data:
+            return jsonify({'error': 'Story data not found'}), 500
 
     session['current_chapter'] = initial_chapter
-    session['current_node'] = story_data['start_node']
+
+    # Random Start Node logic
+    start_node = story_data['start_node']
+    if isinstance(start_node, list):
+        start_node = random.choice(start_node)
+
+    session['current_node'] = start_node
     session['sanity'] = story_data.get('initial_state', {}).get('sanity', 100)
     session['inventory'] = story_data.get('initial_state', {}).get('inventory', [])
-    session['stats'] = story_data.get('initial_state', {}).get('stats', {'str': 10, 'dex': 10})
+    session['stats'] = story_data.get('initial_state', {}).get('stats', {'str': 10, 'dex': 10, 'int': 10, 'cha': 10})
     session['mode'] = 'story'
 
-    node_data = story_data['nodes'][story_data['start_node']]
+    node_data = story_data['nodes'][start_node]
     return jsonify(get_response_payload(node_data))
 
 @app.route('/choice', methods=['POST'])
@@ -57,16 +78,42 @@ def make_choice():
 
     current_chapter_name = session.get('current_chapter')
     current_node_id = session.get('current_node')
+    choice_index = request.json.get('index')
 
     if not current_chapter_name or not current_node_id:
         return jsonify({'error': 'Game not started'}), 400
+
+    # Special handling for virtual node 'RANDOM_EVENT_Active'
+    if current_node_id == 'RANDOM_EVENT_Active':
+        # We don't load from story_data because this node is virtual.
+        # We assume choice is "Continue" (index 0)
+        # Restore state
+        next_node_id = session.get('pending_destination')
+        next_chapter = session.get('pending_chapter')
+
+        # If pending_destination was a list (random outcome), resolve it now if not done
+        if isinstance(next_node_id, list):
+            next_node_id = random.choice(next_node_id)
+
+        session['current_node'] = next_node_id
+        session['current_chapter'] = next_chapter
+
+        # Now load the actual destination
+        story_data = load_chapter(next_chapter)
+        if not story_data:
+             return jsonify({'error': 'Pending chapter not found'}), 500
+
+        node = story_data['nodes'].get(next_node_id)
+        if not node:
+             return jsonify({'error': f'Node {next_node_id} not found'}), 500
+
+        return jsonify(get_response_payload(node))
 
     story_data = load_chapter(current_chapter_name)
     if not story_data:
          return jsonify({'error': 'Chapter data missing'}), 500
 
     node = story_data['nodes'].get(current_node_id)
-    choice_index = request.json.get('index')
 
     if not node or choice_index is None:
         return jsonify({'error': 'Invalid state'}), 400
@@ -181,7 +228,105 @@ def make_choice():
 
     # Handle Transition
 
-    if next_chapter:
+    # Handle Random Events (Interruption)
+    # 15% chance, only if not switching chapters (to keep simple) and not a special node
+    triggered_event = None
+    if not next_chapter and RANDOM_EVENTS and random.random() < 0.15:
+        # Don't trigger if the current choice specifically avoids it (optional flag)
+        # Pick a random event
+        event = random.choice(RANDOM_EVENTS)
+        triggered_event = event
+        # We don't change session['current_node'] permanently yet,
+        # but we serve the event node. The event node MUST have a choice to "Continue"
+        # which points to 'next_node_id' (we need to inject this).
+
+        # Actually, a cleaner way is: The event is a transient node.
+        # We construct a node on the fly.
+
+        # Store where we were going
+        session['resume_node'] = next_node_id
+        session['resume_chapter'] = session.get('current_chapter')
+
+        # Override destination to event
+        # But wait, random events are generic. We construct the node data here.
+
+        # We need to construct a "virtual" node.
+        # This virtual node needs a choice that goes to 'resume_node'
+
+        # Let's just handle it by returning the event payload directly
+        # and setting a special 'interruption' state?
+        # No, let's keep it consistent. We'll set current_node to "RANDOM_EVENT_X"
+        # and store the return path.
+        pass # implemented below
+
+    if triggered_event:
+        next_node = {
+            "text": triggered_event['text'],
+            "visual": triggered_event.get('visual', '⚠️'),
+            "choices": [
+                {
+                    "text": "继续前进",
+                    "next_node": next_node_id, # Resume path
+                    "effect": triggered_event.get('effect', {})
+                }
+            ]
+        }
+        # We don't save this node ID in session as it's virtual,
+        # but we update the client. When client clicks "Continue",
+        # it sends index 0. We need to know we are in an event.
+        # Simplest way: Set session['current_node'] to next_node_id (destination)
+        # BUT return the Event content.
+        # The choice in Event content points to... wait.
+        # If we send the Event content, the client sees "Continue".
+        # If client clicks "Continue" (index 0), it hits /choice.
+        # /choice uses session['current_node'].
+        # If we set session['current_node'] to the Destination, then /choice tries to load Destination.
+        # Destination choice index 0 might be anything!
+
+        # Solution: We need a temporary state or a dedicated Random Event handling flow.
+        # OR: We skip the interruption logic for now and rely on "Variable Text" and "Random Start"
+        # which are safer for the requested scope.
+        # The prompt asked for "random interruption".
+
+        # Let's try:
+        # If triggered, we hijack the response.
+        # We set a session flag 'pending_destination' = next_node_id
+        # We set session['current_node'] = 'RANDOM_EVENT'
+        # We define a 'RANDOM_EVENT' node in memory or handle it in load_chapter?
+        # No, simpler:
+
+        # We set next_node to the event data.
+        # We make the choice in the event data point to a specific magic node ID "RESUME".
+        # In make_choice, if next_node_id == "RESUME", we read 'pending_destination'.
+
+        session['pending_destination'] = next_node_id
+        session['pending_chapter'] = next_chapter if next_chapter else session.get('current_chapter')
+        session['current_node'] = 'RANDOM_EVENT_Active'
+
+        next_node = {
+            "text": triggered_event['text'],
+            "visual": triggered_event['visual'],
+            "choices": [
+                {
+                    "text": "继续",
+                    "next_node": "RESUME_JOURNEY",
+                    "effect": triggered_event.get('effect', {})
+                }
+            ]
+        }
+
+    elif current_node_id == 'RANDOM_EVENT_Active' and choice.get('next_node') == 'RESUME_JOURNEY':
+        # We are resuming
+        next_node_id = session.get('pending_destination')
+        next_chapter = session.get('pending_chapter')
+        session['current_node'] = next_node_id
+        session['current_chapter'] = next_chapter
+
+        # Load the actual destination
+        new_story_data = load_chapter(next_chapter)
+        next_node = new_story_data['nodes'].get(next_node_id)
+
+    elif next_chapter:
         # Switch Chapter
         new_story_data = load_chapter(next_chapter)
         if not new_story_data:
@@ -192,10 +337,17 @@ def make_choice():
         if not next_node_id:
             next_node_id = new_story_data['start_node']
 
+        # Check for random start in new chapter too?
+        if isinstance(next_node_id, list):
+             next_node_id = random.choice(next_node_id)
+
         session['current_node'] = next_node_id
         next_node = new_story_data['nodes'].get(next_node_id)
     else:
         # Same Chapter
+        if isinstance(next_node_id, list):
+             next_node_id = random.choice(next_node_id)
+
         session['current_node'] = next_node_id
         next_node = story_data['nodes'].get(next_node_id)
 
@@ -220,8 +372,13 @@ def get_response_payload(node):
          for ch in node['choices']:
              valid_choices.append({'text': ch, 'index': len(valid_choices)})
 
+    # Handle Variable Text
+    text_content = node['text']
+    if isinstance(text_content, list):
+        text_content = random.choice(text_content)
+
     return {
-        'text': node['text'],
+        'text': text_content,
         'visual': node.get('visual', ''),
         'choices': valid_choices,
         'stats': {

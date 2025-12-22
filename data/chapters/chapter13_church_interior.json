@@ -1,0 +1,50 @@
+{
+  "title": "Church Interior",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "教堂内部昏暗，空气中弥漫着香料和腐肉的味道。祭坛上有一个巨大的印记。",
+      "visual": "⛪🕯️",
+      "choices": [
+        {
+          "text": "调查祭坛",
+          "next_node": "altar",
+          "effect": {}
+        },
+        {
+          "text": "离开",
+          "next_chapter": "chapter12_church_ground",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "altar": {
+      "text": "祭坛上放着一本用人皮装订的书。",
+      "visual": "📖👹",
+      "choices": [
+        {
+          "text": "阅读",
+          "next_node": "read_book",
+          "effect": { "sanity": -10, "add_item": "necronomicon_page" }
+        },
+        {
+          "text": "不敢触碰",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "read_book": {
+      "text": "书页上的文字似乎在蠕动。你获得了一些可怕的知识。",
+      "visual": "🧠💥",
+      "choices": [
+        {
+          "text": "收好残页",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    }
+  }
+}
