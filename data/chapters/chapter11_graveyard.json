@@ -1,0 +1,40 @@
+{
+  "title": "Graveyard",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "墓地在浓雾中显得格外阴森。许多墓碑都已经倾斜或断裂。",
+      "visual": "🪦👻",
+      "choices": [
+        {
+          "text": "检查新坟",
+          "next_node": "check_graves",
+          "effect": {}
+        },
+        {
+          "text": "前往教堂",
+          "next_chapter": "chapter12_church_ground",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "离开",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "check_graves": {
+      "text": "你发现有些坟墓是从里面挖开的。",
+      "visual": "⚰️🕳️",
+      "choices": [
+        {
+          "text": "感到不寒而栗",
+          "next_node": "start",
+          "effect": { "sanity": -5 }
+        }
+      ]
+    }
+  }
+}

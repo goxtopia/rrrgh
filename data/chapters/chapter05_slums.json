@@ -1,0 +1,52 @@
+{
+  "title": "Slums",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "贫民窟的房屋摇摇欲坠。你感到无数双眼睛在暗处窥视。",
+      "visual": "🏚️👀",
+      "choices": [
+        {
+          "text": "深入探索",
+          "next_node": "explore",
+          "effect": { "sanity": -5 }
+        },
+        {
+          "text": "撤退",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "explore": {
+      "text": "你发现了一个被遗弃的祭坛，上面放着奇怪的偶像。",
+      "visual": "🛐🗿",
+      "choices": [
+        {
+          "text": "拿走偶像",
+          "next_node": "take_idol",
+          "effect": { "add_item": "strange_idol", "sanity": -10 }
+        },
+        {
+          "text": "离开",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "take_idol": {
+      "text": "偶像入手冰凉。你听到耳边传来低语。",
+      "visual": "❄️👂",
+      "choices": [
+        {
+          "text": "离开",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    }
+  }
+}

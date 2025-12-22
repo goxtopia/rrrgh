@@ -1,0 +1,50 @@
+{
+  "title": "Police Station",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "警察局里一片狼藉，显然发生过激烈的搏斗。",
+      "visual": "👮‍♂️🔫",
+      "choices": [
+        {
+          "text": "搜寻武器",
+          "next_node": "search_weapons",
+          "effect": {}
+        },
+        {
+          "text": "查看档案",
+          "next_node": "read_files",
+          "effect": {}
+        },
+        {
+          "text": "离开",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "search_weapons": {
+      "text": "你在拘留室的尸体旁找到了一些【子弹】。",
+      "visual": "💀💊",
+      "choices": [
+        {
+          "text": "返回大厅",
+          "next_node": "start",
+          "effect": { "add_item": "ammo" }
+        }
+      ]
+    },
+    "read_files": {
+      "text": "档案记录显示，最近失踪案频发，而且所有目击者都提到了‘海里的歌声’。",
+      "visual": "📁📄",
+      "choices": [
+        {
+          "text": "返回大厅",
+          "next_node": "start",
+          "effect": { "update_stats": { "int": 1 } }
+        }
+      ]
+    }
+  }
+}

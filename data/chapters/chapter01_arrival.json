@@ -1,0 +1,157 @@
+{
+  "title": "迷雾港口 (Mist Harbor) - Chapter 1: Arrival",
+  "start_node": "character_select",
+  "initial_state": {
+    "sanity": 100,
+    "inventory": [],
+    "stats": { "str": 10, "dex": 10, "int": 10, "cha": 10 }
+  },
+  "nodes": {
+    "character_select": {
+      "text": "在你恢复意识之前，你回忆起自己是谁...",
+      "visual": "👤❓",
+      "choices": [
+        {
+          "text": "我是个强壮的水手 (STR +5, CHA +2)",
+          "next_node": ["docks_arrival", "beach_arrival", "shipwreck_arrival"],
+          "effect": { "update_stats": { "str": 5, "cha": 2 } }
+        },
+        {
+          "text": "我是个敏捷的小偷 (DEX +5, INT +2)",
+          "next_node": ["docks_arrival", "beach_arrival", "shipwreck_arrival"],
+          "effect": { "update_stats": { "dex": 5, "int": 2 } }
+        },
+        {
+          "text": "我是个私家侦探 (INT +5, STR +2)",
+          "next_node": ["docks_arrival", "beach_arrival", "shipwreck_arrival"],
+          "effect": { "update_stats": { "int": 5, "str": 2 } }
+        },
+        {
+          "text": "我是个落魄的神秘学家 (CHA +5, INT +2, SAN -10)",
+          "next_node": ["docks_arrival", "beach_arrival", "shipwreck_arrival"],
+          "effect": { "update_stats": { "cha": 5, "int": 2 }, "sanity": -10 }
+        }
+      ]
+    },
+    "docks_arrival": {
+      "text": [
+        "你的小船撞上了码头的支柱。这里是迷雾港口的旧码头，空气中弥漫着死鱼的腥气。",
+        "你在浓雾中摸索着爬上岸。码头上的木板发出腐朽的嘎吱声。远处有一盏昏黄的灯。"
+      ],
+      "visual": "⚓🌫️",
+      "choices": [
+        {
+          "text": "前往广场",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "检查附近的仓库",
+          "next_node": "warehouse",
+          "effect": {}
+        }
+      ]
+    },
+    "beach_arrival": {
+      "text": "海浪把你推到了布满黑色鹅卵石的海滩上。这里的沙子是灰色的，散发着恶臭。",
+      "visual": "🏖️🌊",
+      "choices": [
+        {
+          "text": "沿着小路去镇上",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "查看海边的洞穴",
+          "next_chapter": "chapter18_sea_caves",
+          "next_node": "entrance",
+          "effect": {}
+        }
+      ]
+    },
+    "shipwreck_arrival": {
+      "text": "你醒来时发现自己躺在一艘巨大的沉船残骸旁。这艘船看起来是一个世纪前的捕鲸船。",
+      "visual": "🚢💀",
+      "choices": [
+        {
+          "text": "搜寻残骸",
+          "next_node": "search_wreck",
+          "effect": {}
+        },
+        {
+          "text": "爬上悬崖去镇上",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": { "update_stats": { "str": 1 } }
+        }
+      ]
+    },
+    "warehouse": {
+      "text": "仓库里堆满了发霉的货物。阴影里似乎有什么东西在动。",
+      "visual": "🏚️📦",
+      "choices": [
+        {
+          "text": "[STR] 强行撬开生锈的铁箱 (Roll + STR > 13)",
+          "roll": {
+             "dice": "1d20",
+             "bonus_stat": "str",
+             "target": 13,
+             "condition": "gt",
+             "success_node": "loot_warehouse_rare",
+             "failure_node": "loot_warehouse"
+          },
+          "next_node": "dummy"
+        },
+        {
+          "text": "搜查普通货物",
+          "next_node": "loot_warehouse",
+          "effect": {}
+        },
+        {
+          "text": "离开",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "loot_warehouse_rare": {
+      "text": "你撬开了铁箱，发现了一把精致的信号枪。",
+      "visual": "🔫✨",
+      "choices": [
+        {
+          "text": "前往广场",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": { "add_item": ["flare_gun", "supplies", "crowbar"] }
+        }
+      ]
+    },
+    "loot_warehouse": {
+      "text": "你找到了一些【补给品】和一根【撬棍】。",
+      "visual": "🎒🛠️",
+      "choices": [
+        {
+          "text": "前往广场",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": { "add_item": ["supplies", "crowbar"] }
+        }
+      ]
+    },
+    "search_wreck": {
+      "text": "你在船长室找到了一把【生锈的左轮手枪】和一本湿透的【航海日志】。",
+      "visual": "🔫📖",
+      "choices": [
+        {
+          "text": "前往镇上",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": { "add_item": ["revolver", "logbook"] }
+        }
+      ]
+    }
+  }
+}

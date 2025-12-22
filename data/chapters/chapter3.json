@@ -13,6 +13,18 @@
           "effect": {}
         },
         {
+          "text": "[INT] 完美逆转仪式 (Scholar End)",
+          "next_node": "end_scholar",
+          "condition": { "has_item": "counter_spell_knowledge", "has_item": "necronomicon_page" },
+          "effect": {}
+        },
+        {
+          "text": "[CHA] 劝说信徒与古神建立链接 (Cult Leader End)",
+          "next_node": "end_cult_leader",
+          "condition": { "has_item": "dagon_amulet" },
+          "effect": {}
+        },
+        {
           "text": "注入毒药 (Hero End)",
           "next_node": "end_hero",
           "condition": { "has_item": "poison_serum" },
@@ -55,6 +67,16 @@
     "end_secret": {
       "text": "【结局：飞升】\nIä! Iä! Cthulhu fhtagn!",
       "visual": "🐙🌊",
+      "choices": [{ "text": "重启", "next_chapter": "chapter1", "next_node": "arrival", "effect": { "reset": true } }]
+    },
+    "end_scholar": {
+      "text": "【结局：守秘人】\n你利用反咒知识，不仅封印了古神，还将其力量的一小部分困在了水晶中。你没有疯，反而成为了拥有禁忌知识的大师。现在，世界需要你的守护。",
+      "visual": "🎓🔮📚",
+      "choices": [{ "text": "重启", "next_chapter": "chapter1", "next_node": "arrival", "effect": { "reset": true } }]
+    },
+    "end_cult_leader": {
+      "text": "【结局：教主】\n你高举护身符，用充满魔力的声音向信徒们宣告古神的旨意。他们不再攻击，而是跪拜在你脚下。你没有阻止降临，你成为了它的代言人。",
+      "visual": "👑🛐🐙",
       "choices": [{ "text": "重启", "next_chapter": "chapter1", "next_node": "arrival", "effect": { "reset": true } }]
     },
     "end_bad": {

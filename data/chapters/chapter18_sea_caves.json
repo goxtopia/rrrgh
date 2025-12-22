@@ -1,0 +1,50 @@
+{
+  "title": "Sea Caves",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "海蚀洞里潮湿阴冷。岩壁上长满了发光的苔藓。",
+      "visual": "🕳️💧",
+      "choices": [
+        {
+          "text": "深入洞穴",
+          "next_node": "deep_cave",
+          "effect": {}
+        },
+        {
+          "text": "离开",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "deep_cave": {
+      "text": "你发现了一个地下湖。湖中心似乎有什么东西在发光。",
+      "visual": "🌊💎",
+      "choices": [
+        {
+          "text": "游过去",
+          "next_node": "swim",
+          "effect": {}
+        },
+        {
+          "text": "返回",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "swim": {
+      "text": "你在湖底找到了一块刻有符文的石板。",
+      "visual": "🏊‍♂️🪨",
+      "choices": [
+        {
+          "text": "带走石板",
+          "next_node": "start",
+          "effect": { "add_item": "rune_stone" }
+        }
+      ]
+    }
+  }
+}

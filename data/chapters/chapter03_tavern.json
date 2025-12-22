@@ -1,0 +1,70 @@
+{
+  "title": "Tavern",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "老水手酒馆里烟雾缭绕。几个当地人用警惕的目光打量着你。",
+      "visual": "🍺👁️",
+      "choices": [
+        {
+          "text": "[CHA] 试图和酒保套近乎 (Roll + CHA > 12)",
+          "roll": {
+             "dice": "1d20",
+             "bonus_stat": "cha",
+             "target": 12,
+             "condition": "gt",
+             "success_node": "charm_owner",
+             "failure_node": "talk_owner"
+          },
+          "next_node": "dummy"
+        },
+        {
+          "text": "找老板打听消息",
+          "next_node": "talk_owner",
+          "effect": {}
+        },
+        {
+          "text": "独自喝酒",
+          "next_node": "drink_alone",
+          "effect": { "sanity": -2 }
+        }
+      ]
+    },
+    "charm_owner": {
+      "text": "老板对你的笑话很受用。他压低声音说：“如果你要去灯塔，走海蚀洞更安全。这是钥匙。”",
+      "visual": "🗝️😄",
+      "choices": [
+        {
+           "text": "收下钥匙，回到广场",
+           "next_chapter": "chapter02_town_square",
+           "next_node": "start",
+           "effect": { "add_item": "cave_key" }
+        }
+      ]
+    },
+    "talk_owner": {
+      "text": "老板擦着杯子：“外乡人，这里不欢迎好奇心太重的人。特别是关于那个灯塔的。”",
+      "visual": "🍷🗣️",
+      "choices": [
+        {
+           "text": "回到广场",
+           "next_chapter": "chapter02_town_square",
+           "next_node": "start",
+           "effect": {}
+        }
+      ]
+    },
+    "drink_alone": {
+      "text": "劣质的酒精烧灼着你的喉咙，但也让你暂时忘却了恐惧。",
+      "visual": "🥃😌",
+      "choices": [
+        {
+           "text": "回到广场",
+           "next_chapter": "chapter02_town_square",
+           "next_node": "start",
+           "effect": {}
+        }
+      ]
+    }
+  }
+}

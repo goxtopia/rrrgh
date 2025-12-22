@@ -1,0 +1,55 @@
+{
+  "title": "Lighthouse Top",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "塔顶的水晶正在疯狂搏动。天空裂开了一道缝隙。",
+      "visual": "🌌👁️",
+      "choices": [
+        {
+          "text": "使用反咒知识",
+          "next_node": "end_scholar",
+          "condition": { "has_item": "counter_spell_knowledge" },
+          "effect": {}
+        },
+        {
+          "text": "注入毒药",
+          "next_node": "end_hero",
+          "condition": { "has_item": "poison_serum" },
+          "effect": {}
+        },
+        {
+          "text": "成为教主",
+          "next_node": "end_cult_leader",
+          "condition": { "has_item": "dagon_amulet" },
+          "effect": {}
+        },
+        {
+          "text": "什么都做不了",
+          "next_node": "end_bad",
+          "effect": {}
+        }
+      ]
+    },
+    "end_scholar": {
+      "text": "【结局：守秘人】你封印了古神。",
+      "visual": "🎓✨",
+      "choices": [{ "text": "重启", "next_chapter": "chapter01_arrival", "next_node": "start", "effect": { "reset": true } }]
+    },
+    "end_hero": {
+      "text": "【结局：牺牲】你与灯塔同归于尽。",
+      "visual": "💥💀",
+      "choices": [{ "text": "重启", "next_chapter": "chapter01_arrival", "next_node": "start", "effect": { "reset": true } }]
+    },
+    "end_cult_leader": {
+      "text": "【结局：教主】你成为了古神的代言人。",
+      "visual": "👑🐙",
+      "choices": [{ "text": "重启", "next_chapter": "chapter01_arrival", "next_node": "start", "effect": { "reset": true } }]
+    },
+    "end_bad": {
+      "text": "【结局：末日】世界毁灭了。",
+      "visual": "🌍🔥",
+      "choices": [{ "text": "重启", "next_chapter": "chapter01_arrival", "next_node": "start", "effect": { "reset": true } }]
+    }
+  }
+}

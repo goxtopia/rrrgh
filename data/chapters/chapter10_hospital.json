@@ -1,0 +1,34 @@
+{
+  "title": "Hospital",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "医院里充满了消毒水和腐烂混合的味道。",
+      "visual": "🏥💉",
+      "choices": [
+        {
+          "text": "寻找药品",
+          "next_node": "find_meds",
+          "effect": {}
+        },
+        {
+          "text": "离开",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "find_meds": {
+      "text": "你在药房找到了急救包和镇静剂。",
+      "visual": "💊🩹",
+      "choices": [
+        {
+          "text": "带走药品",
+          "next_node": "start",
+          "effect": { "add_item": ["medkit", "sedative"] }
+        }
+      ]
+    }
+  }
+}

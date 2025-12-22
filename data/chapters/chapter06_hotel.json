@@ -1,0 +1,35 @@
+{
+  "title": "Hotel",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "旅馆的大厅空无一人，只有柜台上的铃铛落满了灰尘。",
+      "visual": "🏨🛎️",
+      "choices": [
+        {
+          "text": "休息一晚 (恢复 Sanity)",
+          "next_node": "rest",
+          "effect": {}
+        },
+        {
+          "text": "离开",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "rest": {
+      "text": "你做了一晚上的噩梦，梦见巨大的触手将世界拖入深渊。但你的精神稍微恢复了一些。",
+      "visual": "🛌💤",
+      "choices": [
+        {
+          "text": "醒来",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": { "sanity": 10 }
+        }
+      ]
+    }
+  }
+}

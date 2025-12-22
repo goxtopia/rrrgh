@@ -1,0 +1,34 @@
+{
+  "title": "Museum",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "这个所谓的博物馆只是一个陈列着怪异海洋标本的房间。",
+      "visual": "🏛️🦈",
+      "choices": [
+        {
+          "text": "查看标本",
+          "next_node": "examine_specimen",
+          "effect": {}
+        },
+        {
+          "text": "离开",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "examine_specimen": {
+      "text": "这是一个像人又像鱼的生物标本。它的标签上写着：‘先祖’。",
+      "visual": "🧟‍♂️🏷️",
+      "choices": [
+        {
+          "text": "感到恐惧",
+          "next_node": "start",
+          "effect": { "sanity": -5 }
+        }
+      ]
+    }
+  }
+}

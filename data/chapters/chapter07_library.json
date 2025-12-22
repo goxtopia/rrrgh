@@ -1,0 +1,50 @@
+{
+  "title": "Library",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "图书馆的门虚掩着。里面充满了霉味和古老纸张的味道。",
+      "visual": "📚🏛️",
+      "choices": [
+        {
+          "text": "查阅关于灯塔的资料",
+          "next_node": "research_lighthouse",
+          "effect": {}
+        },
+        {
+          "text": "寻找关于深潜者的传说",
+          "next_node": "research_deepones",
+          "effect": {}
+        },
+        {
+          "text": "离开",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "research_lighthouse": {
+      "text": "你在旧报纸上发现，这座灯塔建于17世纪，据说地基下压着某种不可名状的东西。",
+      "visual": "📰🗼",
+      "choices": [
+        {
+          "text": "继续搜寻",
+          "next_node": "start",
+          "effect": { "update_stats": { "int": 1 } }
+        }
+      ]
+    },
+    "research_deepones": {
+      "text": "一本书详细描述了这一带渔民与海中生物的交易。‘我们给它们献祭，它们给我们丰收和黄金。’",
+      "visual": "📖🐟",
+      "choices": [
+        {
+          "text": "继续搜寻",
+          "next_node": "start",
+          "effect": { "update_stats": { "int": 1 }, "sanity": -5 }
+        }
+      ]
+    }
+  }
+}

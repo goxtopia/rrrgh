@@ -1,0 +1,40 @@
+{
+  "title": "Church Grounds",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": "教堂花园里种满了黑色的玫瑰。荆棘像蛇一样扭曲。",
+      "visual": "🥀⛪",
+      "choices": [
+        {
+          "text": "进入教堂内部",
+          "next_chapter": "chapter13_church_interior",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "绕到后面",
+          "next_node": "backyard",
+          "effect": {}
+        },
+        {
+          "text": "返回墓地",
+          "next_chapter": "chapter11_graveyard",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "backyard": {
+      "text": "你在后面发现了一个地窖入口。",
+      "visual": "🚪⛓️",
+      "choices": [
+        {
+           "text": "地窖锁住了",
+           "next_node": "start",
+           "effect": {}
+        }
+      ]
+    }
+  }
+}

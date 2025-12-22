@@ -15,7 +15,7 @@
             <h1>MIST HARBOR</h1>
             <div id="stats-bar">
                 <span id="sanity-display">SANITY: 100%</span> |
-                <span id="stats-display">STR: 10 DEX: 10</span> |
+                <span id="stats-display">STR: 10 DEX: 10 INT: 10 CHA: 10</span> |
                 <span id="inventory-display">INV: []</span>
             </div>
         </header>
@@ -145,7 +145,8 @@
 
             if (data.stats.attributes) {
                 const attrs = data.stats.attributes;
-                document.getElementById('stats-display').innerText = `STR: ${attrs.str || 10} DEX: ${attrs.dex || 10}`;
+                document.getElementById('stats-display').innerText =
+                    `STR: ${attrs.str || 10} DEX: ${attrs.dex || 10} INT: ${attrs.int || 10} CHA: ${attrs.cha || 10}`;
             }
 
             const invText = data.stats.inventory.length > 0 ? data.stats.inventory.join(', ') : 'EMPTY';

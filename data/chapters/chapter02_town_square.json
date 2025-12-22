@@ -1,0 +1,39 @@
+{
+  "title": "Town Square",
+  "start_node": "start",
+  "nodes": {
+    "start": {
+      "text": [
+        "你来到了镇广场。这里异常安静，只有风吹过空旷街道的声音。",
+        "广场中央矗立着一座奇怪的雕像，看起来像是某种海洋生物与人类的结合体。"
+      ],
+      "visual": "🏘️🗿",
+      "choices": [
+        {
+          "text": "去酒馆",
+          "next_chapter": "chapter03_tavern",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "去集市",
+          "next_chapter": "chapter04_market",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "去贫民窟",
+          "next_chapter": "chapter05_slums",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "找旅馆休息",
+          "next_chapter": "chapter06_hotel",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    }
+  }
+}
