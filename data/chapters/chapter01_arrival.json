@@ -222,7 +222,7 @@
         {
           "text": "查看海边的洞穴入口",
           "next_chapter": "chapter18_sea_caves",
-          "next_node": "entrance",
+          "next_node": "start",
           "effect": {}
         }
       ]

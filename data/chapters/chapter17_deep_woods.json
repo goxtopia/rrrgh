@@ -83,8 +83,8 @@
         },
         {
           "text": "在废墟中休息",
-          "next_node": "rest_ruins",
-          "effect": {}
+          "next_node": "read_runes",
+          "effect": { "update_stats": { "hp": 2 } }
         }
       ]
     },

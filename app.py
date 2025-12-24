@@ -22,8 +22,14 @@ def load_random_events():
     path = 'data/random_events.json'
     if os.path.exists(path):
         with open(path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            RANDOM_EVENTS = data.get('events', [])
+            try:
+                data = json.load(f)
+                RANDOM_EVENTS = data.get('events', [])
+            except json.JSONDecodeError:
+                RANDOM_EVENTS = []
+
+# Initial load
+load_random_events()
 
 def load_chapter(chapter_name):
     if app.debug or chapter_name not in CHAPTER_CACHE:
@@ -84,36 +90,26 @@ def make_choice():
         return jsonify({'error': 'Game not started'}), 400
 
     # Special handling for virtual node 'RANDOM_EVENT_Active'
+    # Handle return from Random Event (virtual node)
     if current_node_id == 'RANDOM_EVENT_Active':
-        # We don't load from story_data because this node is virtual.
-        # We assume choice is "Continue" (index 0)
-        # Restore state
-        next_node_id = session.get('pending_destination')
-        next_chapter = session.get('pending_chapter')
+        # We treat this as a special state where we expect to resume the journey.
+        # However, the logic below for standard choice processing will fail because 'RANDOM_EVENT_Active' isn't in a file.
+        # We handle the resume logic via the 'RESUME_JOURNEY' choice action later in this function
+        # OR we can intercept it here if we simply want to force resume.
+        pass
 
-        # If pending_destination was a list (random outcome), resolve it now if not done
-        if isinstance(next_node_id, list):
-            next_node_id = random.choice(next_node_id)
-
-        session['current_node'] = next_node_id
-        session['current_chapter'] = next_chapter
-
-        # Now load the actual destination
-        story_data = load_chapter(next_chapter)
+    # If in Random Event state, we construct a virtual node to process the 'Continue' choice
+    if current_node_id == 'RANDOM_EVENT_Active':
+        node = {
+            "choices": [{"text": "Continue", "next_node": "RESUME_JOURNEY"}]
+        }
+        # The choice index should be 0
+    else:
+        story_data = load_chapter(current_chapter_name)
         if not story_data:
-             return jsonify({'error': 'Pending chapter not found'}), 500
+             return jsonify({'error': 'Chapter data missing'}), 500
 
-        node = story_data['nodes'].get(next_node_id)
-        if not node:
-             return jsonify({'error': f'Node {next_node_id} not found'}), 500
-
-        return jsonify(get_response_payload(node))
-
-    story_data = load_chapter(current_chapter_name)
-    if not story_data:
-         return jsonify({'error': 'Chapter data missing'}), 500
-
-    node = story_data['nodes'].get(current_node_id)
+        node = story_data['nodes'].get(current_node_id)
 
     if not node or choice_index is None:
         return jsonify({'error': 'Invalid state'}), 400

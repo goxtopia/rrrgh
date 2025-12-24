@@ -195,7 +195,7 @@
         {
           "text": "结局：无名尸体 (重启)",
           "next_chapter": "chapter01_arrival",
-          "next_node": "start",
+          "next_node": "character_select",
           "effect": { "reset": true }
         }
       ]
