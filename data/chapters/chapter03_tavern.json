@@ -25,6 +25,12 @@
           "text": "加入那桌正在玩骰子的人",
           "next_node": "gamble_table",
           "effect": {}
+        },
+        {
+          "text": "离开酒馆",
+          "next_chapter": "chapter02_town_square",
+          "next_node": "start",
+          "effect": {}
         }
       ]
     },

@@ -9,7 +9,7 @@
         {
           "text": "使用反咒知识封印它",
           "next_node": "end_scholar",
-          "condition": { "has_item": "counter_spell_knowledge", "has_item": "necronomicon_page" },
+          "condition": { "has_item": ["counter_spell_knowledge", "necronomicon_page"] },
           "effect": {}
         },
         {
@@ -21,7 +21,7 @@
         {
           "text": "使用达贡护身符控制它",
           "next_node": "end_cult_leader",
-          "condition": { "has_item": "dagon_amulet", "has_item": "ritual_guide" },
+          "condition": { "has_item": ["dagon_amulet", "ritual_guide"] },
           "effect": {}
         },
         {

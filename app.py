@@ -391,7 +391,15 @@ def get_response_payload(node):
 def check_condition(condition):
     if not condition: return True
     if 'has_item' in condition:
-        if condition['has_item'] not in session.get('inventory', []):
+        item = condition['has_item']
+        inv = session.get('inventory', [])
+        # Support list of items (all required)
+        if isinstance(item, list):
+            for i in item:
+                if i not in inv:
+                    return False
+        # Single item
+        elif item not in inv:
             return False
     if 'min_sanity' in condition:
         if session.get('sanity', 0) < condition['min_sanity']:
