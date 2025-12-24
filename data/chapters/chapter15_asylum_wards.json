@@ -23,7 +23,7 @@
         },
         {
           "text": "去地下室实验室",
-          "next_node": "basement_lab",
+          "next_node": "doctor_office_door",
           "effect": {}
         }
       ]
@@ -46,7 +46,7 @@
         },
         {
           "text": "大声呼救",
-          "next_node": "shout_help",
+          "next_node": "struggle_fail",
           "effect": {}
         }
       ]

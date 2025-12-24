@@ -52,7 +52,7 @@
         },
         {
           "text": "继续观察",
-          "next_node": "observe_more",
+          "next_node": "headache",
           "effect": {}
         }
       ]
@@ -123,13 +123,13 @@
       "choices": [
         {
           "text": "寻找狙击位置 (如果有枪)",
-          "next_node": "sniper_spot",
+          "next_node": "rush_altar",
           "condition": { "has_item": "rifle" },
-          "effect": {}
+          "effect": { "update_stats": { "hp": -2 } }
         },
         {
           "text": "扔点东西下去制造混乱",
-          "next_node": "cause_distraction",
+          "next_node": "rush_altar",
           "effect": {}
         },
         {
@@ -180,7 +180,7 @@
         {
           "text": "重新开始",
           "next_chapter": "chapter01_arrival",
-          "next_node": "start",
+          "next_node": "character_select",
           "effect": { "reset": true }
         }
       ]

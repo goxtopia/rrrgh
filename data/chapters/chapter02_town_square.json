@@ -42,6 +42,96 @@
           "text": "查看公告栏",
           "next_node": "check_notice_board",
           "effect": {}
+        },
+        {
+          "text": "探索文化区 (图书馆, 博物馆)",
+          "next_node": "cultural_district",
+          "effect": {}
+        },
+        {
+          "text": "探索公共服务区 (警局, 医院)",
+          "next_node": "services_district",
+          "effect": {}
+        },
+        {
+          "text": "前往郊外 (墓地, 疯人院, 森林)",
+          "next_node": "outskirts",
+          "effect": {}
+        }
+      ]
+    },
+    "cultural_district": {
+      "text": "你来到了文化区。这里的建筑比广场周围的更古老，也更阴森。图书馆的大门紧闭，博物馆的窗户里透出幽幽的绿光。",
+      "visual": "🏛️📚",
+      "choices": [
+        {
+          "text": "进入图书馆",
+          "next_chapter": "chapter07_library",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "参观博物馆",
+          "next_chapter": "chapter08_museum",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "返回广场",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "services_district": {
+      "text": "这片区域聚集了小镇的行政和医疗设施。警察局看起来像一座堡垒，而医院则弥漫着一股消毒水和腐烂混合的味道。",
+      "visual": "🏥👮",
+      "choices": [
+        {
+          "text": "前往警察局",
+          "next_chapter": "chapter09_police_station",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "进入医院",
+          "next_chapter": "chapter10_hospital",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "返回广场",
+          "next_node": "start",
+          "effect": {}
+        }
+      ]
+    },
+    "outskirts": {
+      "text": "小镇的边缘，雾气更浓了。这里通向几个不祥的地方：荒芜的墓地、传闻中的疯人院，以及那片从未有人活着走出来的森林。",
+      "visual": "🌲👻",
+      "choices": [
+        {
+          "text": "前往墓地",
+          "next_chapter": "chapter11_graveyard",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "前往疯人院 (需要线索)",
+          "next_chapter": "chapter14_asylum_yard",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "进入森林",
+          "next_chapter": "chapter16_forest_edge",
+          "next_node": "start",
+          "effect": {}
+        },
+        {
+          "text": "返回广场",
+          "next_node": "start",
+          "effect": {}
         }
       ]
     },
