@@ -316,19 +316,35 @@ def make_choice():
         next_node_id = session.get('pending_destination')
         next_chapter = session.get('pending_chapter')
 
-        # If pending_destination was a list (random outcome), resolve it now
-        if isinstance(next_node_id, list):
-            next_node_id = random.choice(next_node_id)
+        try:
+            # If pending_destination was a list (random outcome), resolve it now
+            if isinstance(next_node_id, list):
+                next_node_id = random.choice(next_node_id)
 
-        session['current_node'] = next_node_id
-        session['current_chapter'] = next_chapter
+            session['current_node'] = next_node_id
+            session['current_chapter'] = next_chapter
 
-        # Load the actual destination
-        new_story_data = load_chapter(next_chapter)
-        if not new_story_data:
-             return jsonify({'error': 'Pending chapter not found'}), 500
+            # Load the actual destination
+            new_story_data = load_chapter(next_chapter)
+            if not new_story_data:
+                 print(f"ERROR: Pending chapter '{next_chapter}' not found. Current State: {session}")
+                 return jsonify({'error': 'Pending chapter not found'}), 500
 
-        next_node = new_story_data['nodes'].get(next_node_id)
+            # Handle case where next_node_id is missing or incorrect
+            next_node = new_story_data['nodes'].get(next_node_id)
+            if not next_node:
+                # Fallback to chapter start if node is missing (safe recovery)
+                print(f"WARNING: Node {next_node_id} not found in {next_chapter}. Falling back to start_node.")
+                start_n = new_story_data['start_node']
+                if isinstance(start_n, list): start_n = random.choice(start_n)
+                session['current_node'] = start_n
+                next_node = new_story_data['nodes'][start_n]
+
+        except Exception as e:
+            print(f"CRITICAL ERROR in RESUME_JOURNEY: {e}")
+            print(f"Debug Info: pending_dest={next_node_id}, pending_chap={next_chapter}")
+            # Reset game state to avoid softlock
+            return jsonify({'error': 'Critical game state error. Restarting recommended.'}), 500
 
     elif next_chapter:
         # Switch Chapter
