@@ -315,11 +315,19 @@ def make_choice():
         # We are resuming
         next_node_id = session.get('pending_destination')
         next_chapter = session.get('pending_chapter')
+
+        # If pending_destination was a list (random outcome), resolve it now
+        if isinstance(next_node_id, list):
+            next_node_id = random.choice(next_node_id)
+
         session['current_node'] = next_node_id
         session['current_chapter'] = next_chapter
 
         # Load the actual destination
         new_story_data = load_chapter(next_chapter)
+        if not new_story_data:
+             return jsonify({'error': 'Pending chapter not found'}), 500
+
         next_node = new_story_data['nodes'].get(next_node_id)
 
     elif next_chapter:
@@ -354,6 +362,16 @@ def make_choice():
     if roll_message:
         payload['roll_message'] = roll_message
     return jsonify(payload)
+
+@app.errorhandler(500)
+def internal_error(error):
+    app.logger.error('Server Error: %s', error)
+    return jsonify({'error': 'Internal Server Error', 'details': str(error)}), 500
+
+@app.errorhandler(400)
+def bad_request(error):
+    app.logger.error('Bad Request: %s', error)
+    return jsonify({'error': 'Bad Request', 'details': str(error)}), 400
 
 def get_response_payload(node):
     valid_choices = []
